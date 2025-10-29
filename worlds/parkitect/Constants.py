@@ -3,7 +3,7 @@ import json
 import pkgutil
 from .data.item_info import item_info
 
-apworld_version = "v0.0.1"
+apworld_version = "v0.1.1"
 base_id = 3000000
 
 Scenario_Items = {
