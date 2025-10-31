@@ -524,10 +524,10 @@ class ParkitectWorld(World):
                 "enabled": goal_shops > 0,
                 "value": goal_shops,
             },
-            "shops2": {
-                "enabled": len(goal_shops) > 0,
-                "value": goal_shops,
-            },
+            #"shops2": {
+            #    "enabled": len(goal_shops) > 0,
+            #    "value": goal_shops,
+            #},
         }
 
         seed = self.multiworld.player_name[self.player] + str(self.options.scenario) + str(self.multiworld.seed_name)
