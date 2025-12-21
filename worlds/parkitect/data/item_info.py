@@ -244,6 +244,16 @@ item_info = {
     "InfoKiosk",
     "Toilets",
   ],
+  "stat_exempt_rides": [
+    "Carousel",
+    "FerrisWheel",
+    "BumperBoats",
+    "CalmRiverRide",
+    "Paddleboats",
+    "RiverRapids",
+    "Rowboats",
+    "SpiralSlide",
+  ],
   "Calm Rides": [
     "BumperCars",
     "Carousel",

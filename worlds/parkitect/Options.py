@@ -45,7 +45,7 @@ class SelectedDifficulty(Choice):
 # DLC's
 class SelectedDLC1(Choice):
     """
-    DLC's have extra rides and shops.
+    Taste of Adventures DLC
     """
     display_name = "Taste of Adventures"
     option_no = 0
@@ -54,7 +54,7 @@ class SelectedDLC1(Choice):
 
 class SelectedDLC2(Choice):
     """
-    DLC's have extra rides and shops.
+    Booms and Blooms DLC
     """
     display_name = "Booms and Blooms"
     option_no = 0
@@ -63,7 +63,7 @@ class SelectedDLC2(Choice):
 
 class SelectedDLC3(Choice):
     """
-    DLC's have extra rides and shops.
+    Dinos and Dynasties DLC
     """
     display_name = "Dinos and Dynasties"
     option_no = 0
@@ -150,7 +150,7 @@ class GoalShopProfit(Range): # ShopProfitGoal
     display_name = "Shop Profit Goal"
     default = 500
     range_start = 0
-    range_end = 5000
+    range_end = 3000
 
 # Challenge
 class ChallengeMaximumExcitement(Range):
