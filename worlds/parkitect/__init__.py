@@ -282,7 +282,7 @@ class ParkitectWorld(World):
                 customers = 0
                 
                 # Shop -> max: 3
-                # Shop Typers -> max: 6
+                # Shop Types -> max: 6
                 if thing in item_info["Shops"] or thing in item_info["shop_types"]:
                     max = 3
                     shop_revenue = 0
@@ -316,12 +316,13 @@ class ParkitectWorld(World):
 
                     unlock["item"] = Statistics(
                         thing,
-                        self.random.randint(1, 3),
+                        self.random.randint(1, max),
                         revenue=shop_revenue,
                         customers=customers
                     ).to_dict()
 
                 # Ride -> max: 3
+                # Ride Types -> max: 5
                 elif thing in item_info["Rides"] or thing in item_info["ride_types"]:
                     ride_revenue = 0
 
@@ -330,6 +331,9 @@ class ParkitectWorld(World):
                             0, 
                             self.options.challenge_maximum_shop_revenue.value
                         ))
+
+                    if thing in item_info['stat_exempt_rides'] and ride_revenue > 200:
+                        ride_revenue = round(self.random.uniform(0, 200))
 
                     if self.random.random() < .5:
                         customers = round(self.random.uniform(
@@ -345,10 +349,14 @@ class ParkitectWorld(World):
 
                         else:
                             ride_revenue = 0
+                    
+                    max = 3
+                    if thing in item_info["ride_types"]:
+                        max = 5
 
                     unlock["item"] = Statistics(
                         thing,
-                        self.random.randint(1, 3),
+                        self.random.randint(1, max),
                         revenue=ride_revenue,
                         customers=customers
                     ).to_dict()
@@ -356,12 +364,12 @@ class ParkitectWorld(World):
             # --- Tier 3: -> 35% ---
             elif progress <= 0.35:
                 # Shop -> max: 4
-                # Shop Typers -> max: 8
+                # Shop Types -> max: 12
                 if thing in item_info["Shops"] or thing in item_info["shop_types"]:
                     max = 4
 
                     if thing in item_info["shop_types"]:
-                        max = 8
+                        max = 12
 
                     unlock["item"] = Statistics.random_roll(
                         thing,
@@ -371,8 +379,12 @@ class ParkitectWorld(World):
                     ).to_dict()
 
                 # Ride -> max: 4
+                # Ride Types -> max: 8
                 elif thing in item_info["Rides"] or thing in item_info["ride_types"]:
                     max = 4
+
+                    if thing in item_info["ride_types"]:
+                        max = 8
 
                     unlock["item"] = Statistics.random_roll(
                         thing,
@@ -384,12 +396,12 @@ class ParkitectWorld(World):
             # --- Tier 4: -> 60% ---
             elif progress <= 0.60:
                 # Shop -> max: 6
-                # Shop Typers -> max: 18
+                # Shop Types -> max: 24
                 if thing in item_info["Shops"] or thing in item_info["shop_types"]:
                     max = 6
                 
                     if thing in item_info["shop_types"]:
-                        max = 18
+                        max = 24
 
                     unlock["item"] = Statistics.random_roll(
                         thing,
@@ -399,9 +411,13 @@ class ParkitectWorld(World):
                     ).to_dict()
 
                 # Ride -> max: 5
+                # Ride Types -> max: 10
                 # Coaster -> max: 3
                 elif thing in item_info["Rides"] or thing in item_info["ride_types"]:
                     max = 3 if thing in item_info["Coaster Rides"] else 5
+
+                    if thing in item_info["ride_types"]:
+                        max = 10
 
                     unlock["item"] = Statistics.random_roll(
                         thing,
@@ -413,12 +429,12 @@ class ParkitectWorld(World):
             # --- Tier 5: +60% ---
             else:
                 # Shops -> max: 6
-                # Shop Types -> max: 24
+                # Shop Types -> max: 30
                 if thing in item_info["Shops"] or thing in item_info["shop_types"]:
                     max = 6
 
                     if thing in item_info["shop_types"]:
-                        max = 24
+                        max = 30
 
                     unlock["item"] = Statistics.random_roll(
                         thing,
@@ -427,9 +443,9 @@ class ParkitectWorld(World):
                         possible_prereqs
                     ).to_dict()
 
-                # Coaster Ride -> max: 4
+                # Coaster Ride -> max: 3
                 elif thing in item_info["Coaster Rides"]:
-                    max = 4
+                    max = 3
 
                     unlock["item"] = Statistics.random_roll(
                         thing,
@@ -439,12 +455,16 @@ class ParkitectWorld(World):
                     ).to_dict()
             
                 # Ride -> max: 5
+                # Ride Types -> max: 15
                 elif thing in item_info["Rides"] or thing in item_info["ride_types"]:
                     max = 5
+                
+                    if thing in item_info["ride_types"]:
+                        max = 15
 
                     unlock["item"] = Statistics.random_roll(
                         thing,
-                        self.random.randint(1, 7),
+                        self.random.randint(1, max),
                         self,
                         possible_prereqs
                     ).to_dict()
@@ -489,7 +509,7 @@ class ParkitectWorld(World):
         goal_shops = self.options.goal_shops.value
         goal_shop_profit = self.options.goal_shop_profit.value
 
-        print(self.item_table)
+        #print(self.item_table)
 
         goals = {
             "park_tickets": {

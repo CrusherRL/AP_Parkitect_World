@@ -24,7 +24,7 @@ The randomizer can affect almost every system inside Parkitect, bringing chaos a
 
 #### 🧍 Player
 - Starting **money**
-- Attraction **speed modifiers** (5x, 7x, 9x)
+- Attraction **speed modifiers** (4x, 5x, 6x, 7x, 8x, 9x)
 
 #### 🎢 Attractions
 - **Breakdowns**
@@ -59,13 +59,15 @@ Here’s what can appear in **other players’ worlds**:
 | Category | Item | Description |
 |-----------|------|-------------|
 | **Player** | 💰 Money (+/-) | Changes player’s park funds |
-| **Attractions** | ⚙️ Breakdowns | Random attraction malfunctions (excluding crashes & lightning strikes) |
-| | 🎟️ Vouchers | Boost ride appeal or revenue |
-| **Shops / Stalls** | 📦 Ingredient Re-Delivery | Triggers restocking |
+| **Attractions** | 🎠 Attractions |
+| | ⚙️ Breakdowns | Random attraction malfunctions (excluding crashes & lightning strikes) |
+| | 🎟️ Vouchers ||
+| **Shops / Stalls** | 🍔 Stall/Shop ||
+| | 📦 Ingredient Re-Delivery | Triggers restocking |
 | | 🧹 Cleaning Job | Assigns janitors |
-| | 🎟️ Vouchers | Boost shop revenue |
+| | 🎟️ Vouchers ||
 | **Employees (Traps)** | 💤 Tired, 🧠 Training, 🧑‍🔧 Hiring | Modifies employee states |
-| **Weather (Traps)** | 🌧️ Rainy / Stormy | Alters weather conditions |
+| **Weather (Traps)** | 🌧️ Rainy / Stormy / Cloudy / Sunny | Alters weather conditions |
 | **Guests (Traps)** | 🧍 Spawning, 💀 Kill, 💸 Money (+/-), 🍔 Hungry, 🥤 Thirsty, 🚽 Toilet, 🤢 Vomit, 😡 Happiness, 😴 Tiredness, 🧨 Vandal | Alters guest states or spawns effects |
 
 ---
@@ -109,7 +111,7 @@ If you want to submit your own Parkitect scenario for the AP World:
 
 - Must include **all attraction and shop types**
 - **Decorations** are optional (not randomized)
-- Must have **one mandatory goal** (e.g., 100% happiness)
+- Must have **one mandatory goal** (e.g., 95% happiness)
 - Guests must **enter without pathfinding issues**
 - Must be **balanced** and **fun**
 - Should have **enough space** for building expansions
@@ -121,13 +123,13 @@ If you want to submit your own Parkitect scenario for the AP World:
 
 | Category | Status | Notes |
 |-----------|---------|-------|
-| **Operating Systems** | ✅ Tested on **Windows 10** | Not yet tested on **Linux** or **macOS** |
-| **Multiplayer** | ⚠️ Not Tested / Likely Unsupported | Designed for single-player randomization |
-| **Game Version** | ✅ Latest Steam build (1.12b2 - as of Oct 2025) | Previous versions unverified |
-| **Other Mods** | ⚙️ Tested with **Perspective Camera** | No known conflicts |
-| **Performance** | ✅ Stable | No major FPS or crash issues detected |
-| **Archipelago Connection** | ✅ Works with local & remote servers | Auto-connect supported |
-| **AP World error on generation** | ⚙️ Sometimes won’t build | Try again xD happens around 1/7 |
+| **Operating Systems** | ✅ Tested on **Windows 10** and **MacOS Sequoia 15.6** | Not tested on **Linux** yet |
+| **Multiplayer** | ⚠️ Not Tested / Likely Unsupported | The mod was designed for single-player mode — multiplayer may cause sync issues |
+| **Game Version** | ✅ Steam release (1.12c) | Earlier versions before Steam release (1.12b2) won’t work |
+| **Other Mods** | ⚙️ Attraction/Shop Mods do not work! ||
+| **Performance** | ✅ Stable | No major FPS drops or memory issues during extended play |
+| **Archipelago Connection** | ✅ Tested with local and remote servers | No known connection issues |
+| **Archipelago Multigame** | ✅ Stable ||
 
 ---
 

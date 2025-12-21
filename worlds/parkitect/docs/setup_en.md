@@ -2,8 +2,8 @@
 
 ## Required Software
 
-- Parkitect (1.12b2)
-- DLC's (Taste of Adventure and Booms & Blooms) - Optional
+- Parkitect (1.12b2) or higher
+- DLC's (Taste of Adventure, Booms & Blooms and Dinos and Dynasties) - Optional
 - The built-in Archipelago client, which can be installed [here](https://github.com/ArchipelagoMW/Archipelago/releases)
 
 ## Configuring your YAML file

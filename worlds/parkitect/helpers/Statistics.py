@@ -139,6 +139,9 @@ class Statistics:
       if no_stats and (rule.random.random() < .85 or force):
         option_total_customers = round(rule.random.uniform(0, max_customers))
 
+      if name in item_info['stat_exempt_rides'] and option_revenue > 200:
+        option_revenue = round(rule.random.uniform(0, 200))
+
     # Create and return a new Statistics object
     return Statistics(
       name = name,

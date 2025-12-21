@@ -1,9 +1,6 @@
-import os
-import json
-import pkgutil
 from .data.item_info import item_info
 
-apworld_version = "v0.1.3"
+apworld_version = "v1.0.0"
 base_id = 3000000
 
 Scenario_Items = {
