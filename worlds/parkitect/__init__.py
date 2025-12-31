@@ -1,5 +1,4 @@
 import math
-from typing import TextIO
 
 from BaseClasses import ItemClassification, Region, Location, Tutorial
 from worlds.generic.Rules import add_rule
@@ -15,7 +14,7 @@ from worlds.AutoWorld import World, WebWorld
 
 class ParkitectLocation(Location):
     game = "Parkitect"
-
+    
 class ParkitectWebWorld(WebWorld):
     theme = "partyTime"
 
@@ -231,7 +230,7 @@ class ParkitectWorld(World):
         #print("--------------------------------")
         for number, item in enumerate(self.item_table):
             thing = ""
-            unlock = {"location_id": number, "item": []}
+            unlock = {"location_id": number, "item": None}
 
             progress = number / item_table_length
 
@@ -511,6 +510,12 @@ class ParkitectWorld(World):
 
         #print(self.item_table)
 
+        seed = "_".join([
+            str(self.options.scenario.value),
+            self.multiworld.player_name[self.player],
+            str(self.multiworld.seed_name)
+        ])
+
         goals = {
             "park_tickets": {
                 "enabled": goal_park_tickets > 0,
@@ -549,8 +554,6 @@ class ParkitectWorld(World):
             #    "value": goal_shops,
             #},
         }
-
-        seed = self.multiworld.player_name[self.player] + str(self.options.scenario) + str(self.multiworld.seed_name)
         slot_data = self.options.as_dict(
             "scenario",
         )
