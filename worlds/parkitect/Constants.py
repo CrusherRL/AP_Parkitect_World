@@ -1,6 +1,6 @@
 from .data.item_info import item_info
 
-apworld_version = "v1.1.0"
+apworld_version = "v1.2.0"
 base_id = 3000000
 
 Scenario_Items = {
