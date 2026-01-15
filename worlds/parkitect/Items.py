@@ -56,6 +56,61 @@ def filter_items_by_dlc(items, dlc1_value, dlc2_value, dlc3_value):
 
     return filtered_items
 
+def filter_items_by_mod_toggles(items, options):
+    """
+    Filter Parkitect items based on which mod toggles are enabled.
+
+    items: list of all items
+    options: self.options from the World class
+    """
+    filtered_items = items[:]
+
+    # Statisches Mapping Toggle -> Items
+    if not options.dragon_shop:
+        filtered_items = [i for i in filtered_items if i != "Dragon Shop"]
+    if not options.taco_shop:
+        filtered_items = [i for i in filtered_items if i != "Taco Shop"]
+    if not options.pancake_shop:
+        filtered_items = [i for i in filtered_items if i != "Pancake Shop"]
+
+    if not options.revolution_attraction:
+        filtered_items = [i for i in filtered_items if i != "Revolution"]
+    if not options.monster_attraction:
+        filtered_items = [i for i in filtered_items if i != "Monster"]
+    if not options.inverter_and_somersault_attraction:
+        filtered_items = [i for i in filtered_items if i not in ["Inverter", "Somersault"]]
+    if not options.circus_show_attraction:
+        filtered_items = [i for i in filtered_items if i != "Circus Show"]
+    if not options.jump_attraction:
+        filtered_items = [i for i in filtered_items if i != "Jump²"]
+    if not options.rockin_tug_attraction:
+        filtered_items = [i for i in filtered_items if i != "Rockin' Tug"]
+    if not options.fish_barrel_attraction:
+        filtered_items = [i for i in filtered_items if i != "Fish In A Barrel"]
+    if not options.hopper_attraction:
+        filtered_items = [i for i in filtered_items if i != "Hopper"]
+    if not options.demon_drop_attraction:
+        filtered_items = [i for i in filtered_items if i != "Demon Drop"]
+    if not options.roto_shake_attraction:
+        filtered_items = [i for i in filtered_items if i != "RotoShake"]
+    if not options.hexentanz_attraction:
+        filtered_items = [i for i in filtered_items if i != "Hexentanz"]
+    if not options.power_swing_and_mega_swing_attraction:
+        filtered_items = [i for i in filtered_items if i not in ["Power Swing", "Mega Swing"]]
+    if not options.kraken_attack_attraction:
+        filtered_items = [i for i in filtered_items if i != "Kraken Attack"]
+
+    if not options.corkscrew_coaster:
+        filtered_items = [i for i in filtered_items if i != "Corkscrew Coaster"]
+    if not options.inverted_launch_coaster:
+        filtered_items = [i for i in filtered_items if i != "Inverted Launch Coaster"]
+    if not options.quadruple_rail_coaster:
+        filtered_items = [i for i in filtered_items if i != "Quadruple Rail Coaster"]
+    if not options.retro_steel_coaster:
+        filtered_items = [i for i in filtered_items if i != "Retro Steel Coaster"]
+
+    return filtered_items
+
 class ParkitectItem(Item):
     game: str = "Parkitect"
 
@@ -64,6 +119,7 @@ def set_parkitect_items(world):
     
     # Filter out DLC items based on DLC selection
     parkitect_items = filter_items_by_dlc(parkitect_items, world.options.dlc1.value, world.options.dlc2.value, world.options.dlc3.value)
+    parkitect_items = filter_items_by_mod_toggles(parkitect_items, world.options)
 
     for each in range(world.options.trap_player_money.value):
         parkitect_items.append("Player Money Trap")
@@ -130,6 +186,9 @@ def set_parkitect_items(world):
 
     for each in range(world.options.challenge_skips.value):
         parkitect_items.append("Skip")
+
+    # Parkitect Mods
+
 
     if (world.options.progressive_speedups.value == 1):
         for each in range(6):
