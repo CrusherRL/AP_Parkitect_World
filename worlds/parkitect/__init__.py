@@ -205,12 +205,9 @@ class ParkitectWorld(World):
             else:
                 add_rule(entrance, lambda state, selected_prereq=selected_item: state.has_group(selected_prereq, self.player))
 
-        difficulty_modifier = 0
+        difficulty_modifier = .25
 
-        if self.options.difficulty == "easy":
-            difficulty_modifier = .25
-
-        elif self.options.difficulty == "medium":
+        if self.options.difficulty == "medium":
             difficulty_modifier = .45
 
         elif self.options.difficulty == "hard":
@@ -549,10 +546,10 @@ class ParkitectWorld(World):
                 "enabled": goal_shops > 0,
                 "value": goal_shops,
             },
-            #"shops2": {
-            #    "enabled": len(goal_shops) > 0,
-            #    "value": goal_shops,
-            #},
+            "shops2": {
+                "enabled": len(goal_shops) > 0,
+                "value": goal_shops,
+            },
         }
         slot_data = self.options.as_dict(
             "scenario",

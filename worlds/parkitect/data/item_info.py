@@ -646,7 +646,7 @@ item_info = {
     "Water Rides": [],
     "Shops": [],
   },
-  "mod_rocking_tug_attraction": {
+  "mod_rockin_tug_attraction": {
     "Calm Rides": ["Rockin' Tug"],
     "Thrill Rides": [],
     "Coaster Rides": [],
