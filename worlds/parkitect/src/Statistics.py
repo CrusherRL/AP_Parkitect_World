@@ -75,7 +75,6 @@ class Statistics:
       })
     print('----------------- !!! ----------------')
 
-
   @staticmethod
   def random_roll(name: str, amount: int, rule, possible_prereqs = [], force = False):
     """
