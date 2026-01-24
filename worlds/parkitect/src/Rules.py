@@ -15,10 +15,11 @@ class Rules:
     self.world = world
 
   def _set_parkitect_rule(self, rule_type, selected_item, location_number) -> None:
-    LoggerHelper.log(location_number)
+    LoggerHelper.log(location_number, "_set_parkitect_rule")
     region_name = Regions.get_previous_region_from_parkitect_location(location_number)
     assert region_name is not None and region_name != '', "Couldn't find Regionname for _set_parkitect_rule"
     
+    LoggerHelper.log(region_name, "region_name")
     entrance = self.world.multiworld.get_region(region_name, self.world.player).entrances[0]
     assert entrance is not None and entrance != '', f"Couldn't find entrance from Region \"{region_name}\""
 
@@ -29,11 +30,11 @@ class Rules:
     #LoggerHelper.info(f"Entrance {entrance.name} existing rule: {entrance.access_rule}")
 
     if rule_type == RULE_TYPE_PARKITECT_ITEM:
-      add_rule(entrance, lambda state, selected_prereq=selected_item: state.has(selected_prereq, self.world.player))
+      #add_rule(entrance, lambda state: state.has(selected_item, self.world.player))
       return
 
     if rule_type == RULE_TYPE_CATEGORY:
-      add_rule(entrance, lambda state, selected_prereq=selected_item: state.has_group(selected_prereq, self.world.player))
+      #add_rule(entrance, lambda state: state.has_group(selected_item, self.world.player))
       return
 
     assert rule_type in (
@@ -84,14 +85,13 @@ class Rules:
 
     LoggerHelper.log(self.world.starter, "starter")
 
-    for number, item in enumerate(self.world.item_table):
+    for number, parkitect_item in enumerate(self.world.item_table):
       check = {
         "location_id": number,
         "item": None
       }
 
       LoggerHelper.log(prerequisites, "prerequisites")
-      LoggerHelper.log(check, "check")
 
       # Chosen prerequisite
       if self.world.random.random() < difficulty_modifier:
@@ -103,19 +103,21 @@ class Rules:
       # Is category
       else:
         item = Rules.determine_item_category(self.world.random.choice(prerequisites))
+        LoggerHelper.log(item, "Chosen category")
         self._set_parkitect_rule(RULE_TYPE_CATEGORY, item, number)
 
       progress = number / item_table_length
       itemHelper = ItemHelper(item)
       check = self._create_check(number, itemHelper, prerequisites, progress)
+      LoggerHelper.log(check, "check")
       self.world.challenges.append(check)
 
       # Handle unlocked rides
-      if item in SHOPS[TYPE_ALL] or item in RIDES[TYPE_ALL]:
-        queued_prerequisites.append(item)
+      if parkitect_item in SHOPS[TYPE_ALL] or parkitect_item in RIDES[TYPE_ALL]:
+        queued_prerequisites.append(parkitect_item)
 
       # Every fourth
-      if number == 2 or number % 4 == 0:
+      if number == 2 or number % 5 == 0:
         for prereq in queued_prerequisites:
           prerequisites.append(prereq)
         queued_prerequisites.clear()
@@ -137,6 +139,9 @@ class Rules:
     elif number <= 3:
       # max: 2
       max = 2
+
+      if itemHelper.is_coaster():
+        max = 1
 
       check["item"] = Statistics(
         itemHelper,
@@ -189,6 +194,7 @@ class Rules:
         ).to_dict()
 
       # Ride -> max: 3
+      # Coaster -> max: 2
       # Ride Category -> max: 5
       elif itemHelper.is_ride() or itemHelper.is_ride_category():
         max = 3
@@ -196,6 +202,9 @@ class Rules:
 
         if itemHelper.is_ride_category():
           max = 5
+
+        elif itemHelper.is_coaster():
+          max = 2
 
         if self.world.random.random() < .5:
           ride_revenue = round(self.world.random.uniform(
@@ -247,12 +256,16 @@ class Rules:
         ).to_dict()
 
       # Ride -> max: 4
+      # Coaster -> max: 3
       # Ride Category -> max: 8
       elif itemHelper.is_ride() or itemHelper.is_ride_category():
         max = 4
 
         if itemHelper.is_ride_category():
           max = 8
+        
+        elif itemHelper.is_coaster():
+          max = 3
 
         check["item"] = Statistics.random_roll(
           itemHelper,

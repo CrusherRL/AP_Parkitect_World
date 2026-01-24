@@ -66,7 +66,7 @@ class Regions:
       location += 1
     return locations
 
-  def create(self, item_length) -> None:
+  def create(self, item_length: int) -> None:
     m = Region("Menu", self.player, self.multiworld)
     m.locations = []
     self.multiworld.regions.append(m)
@@ -94,7 +94,8 @@ class Regions:
     current_level = 1
     item = 3
 
-    while (item + 2) < item_length:
+    while (item + 3) <= item_length:
+      LoggerHelper.info(f"{current_level} - {item}")
       level = Region(f"Parkitect_Challenge_Level_{current_level}", self.player, self.multiworld)
       level.locations = self._locations_to_region(item, item + 2, level)
       self.multiworld.regions.append(level)
@@ -110,16 +111,24 @@ class Regions:
       item += 3
       current_level += 1
 
+    LoggerHelper.info(f"ending: {current_level} - {item}")
+    current_level -= 1
+
     # fill rest of items, if there are any
     if item < item_length:
-      end_level = Region(f"Parkitect_Challenge_Level_{current_level}", self.player, self.multiworld)
-      end_level.locations = self._locations_to_region(item, (item_length - 1), end_level)
+      LoggerHelper.info("setting extra end level")
+      end_level = Region(f"Parkitect_Challenge_Level_{current_level + 1}", self.player, self.multiworld)
+      end_level.locations = self._locations_to_region(item, item_length - 1, end_level)
       self.multiworld.regions.append(end_level)
+
+      previous_level = self.multiworld.get_region(f"Parkitect_Challenge_Level_{current_level}", self.player)
+      previous_level.connect(end_level)
+
       current_level += 1
 
-    # calculating down, because we want the last id of the level
-    current_level -= 1
-   
+    all_locations = list[Location](self.multiworld.get_locations(self.player))
+    location_count = len(all_locations)
+
     victory = Region("Victory", self.player, self.multiworld)
     victory.locations = [ParkitectLocation(self.player, "Victory", None, victory)]
     self.multiworld.regions.append(victory)
@@ -127,10 +136,11 @@ class Regions:
     final_region = self.multiworld.get_region(f"Parkitect_Challenge_Level_{current_level}", self.player)
     final_region.connect(victory)
 
-    all_locations = list(self.multiworld.get_locations(self.player))
-    location_count = len(all_locations) - 1
-
     LoggerHelper.log(all_locations, "all locations")
     visualize_regions(m, 'parkitect-regions')
     # They must be equal
+
+    LoggerHelper.log(item_length, "item_length")
+    LoggerHelper.log(location_count, "location_count")
+
     assert location_count == item_length, "Fillable Locations and Items aren't equal"

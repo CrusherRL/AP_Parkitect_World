@@ -56,6 +56,7 @@ class ParkitectWorld(World):
 
   def generate_early(self) -> None:
     self.item_table, self.starter = set_items(self)
+    LoggerHelper.log(len(self.item_table), "Total Items")
 
   def create_regions(self) -> None:
     Regions(self.player, self.multiworld, self.location_name_to_id).create((len(self.item_table)))
@@ -97,7 +98,7 @@ class ParkitectWorld(World):
     self.multiworld.completion_condition[self.player] = lambda state: state.has("Victory", self.player)
 
   def set_rules(self) -> None:
-    self.random.shuffle(self.item_table)
+    #self.random.shuffle(self.item_table)
     Rules(self).set()
     LoggerHelper.log("Set Rules")
 
@@ -170,5 +171,7 @@ class ParkitectWorld(World):
     slot_data["seed"] = seed
     slot_data["version"] = APWORLD_VERSION
     slot_data["challenges"] = self.challenges
+
+    LoggerHelper.info(self.challenges)
 
     return slot_data
