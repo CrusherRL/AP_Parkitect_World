@@ -7,3 +7,9 @@ class LoggerHelper:
     logger.info(f"----- {subject} -----")
     logger.info(thing)
     logger.info(f"----- {subject} -----")
+    logger.info("")
+
+  @staticmethod
+  def info(thing):
+    logger.info(thing)
+    logger.info("")

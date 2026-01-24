@@ -39,7 +39,7 @@ class Regions:
 
     while location <= ending_location:
       if location < 3:
-        locationName = f"Challenge_{location}_0"
+        locationName = f"Challenge_{location + 1}_0"
         locations.append(ParkitectLocation(
           self.player,
           locationName,
@@ -75,6 +75,9 @@ class Regions:
     c.locations = []
     self.multiworld.regions.append(c)
 
+    # Connecting Menu with Challenges
+    m.connect(c)
+
     # first Challenges we can submit easily
     # Also just a show how the flow should look alike
     level_0 = Region("Parkitect_Challenge_Level_0", self.player, self.multiworld)  # Levels of the unlock tree
@@ -85,74 +88,49 @@ class Regions:
     ]
     self.multiworld.regions.append(level_0)
 
+    # Connecting Challenges to first level
+    c.connect(level_0)
+
     current_level = 1
     item = 3
 
     while (item + 2) < item_length:
-      level = Region("Parkitect_Challenge_Level_" + str(current_level), self.player, self.multiworld)
+      level = Region(f"Parkitect_Challenge_Level_{current_level}", self.player, self.multiworld)
       level.locations = self._locations_to_region(item, item + 2, level)
       self.multiworld.regions.append(level)
+
+      # connect them
+      if (current_level != 1):
+        previous_level = self.multiworld.get_region(f"Parkitect_Challenge_Level_{current_level - 1}", self.player)
+      else:
+        previous_level = level_0
+
+      previous_level.connect(level)
+
       item += 3
       current_level += 1
 
     # fill rest of items, if there are any
-    if item != item_length:
-      end_level = Region("Parkitect_Challenge_Level_" + str(current_level), self.player, self.multiworld)
+    if item < item_length:
+      end_level = Region(f"Parkitect_Challenge_Level_{current_level}", self.player, self.multiworld)
       end_level.locations = self._locations_to_region(item, (item_length - 1), end_level)
       self.multiworld.regions.append(end_level)
       current_level += 1
 
+    # calculating down, because we want the last id of the level
     current_level -= 1
    
     victory = Region("Victory", self.player, self.multiworld)
     victory.locations = [ParkitectLocation(self.player, "Victory", None, victory)]
     self.multiworld.regions.append(victory)
 
-    m.connect(c)
-    c.connect(self.multiworld.get_region("Parkitect_Challenge_Level_0", self.player))
-
-    count = 0
-    while count < current_level:
-      region = self.multiworld.get_region(f"Parkitect_Challenge_Level_{count}", self.player)
-      region_entrance = region.connect(self.multiworld.get_region(f"Parkitect_Challenge_Level_{count + 1}", self.player))
-      num_rides = 0
-      num_shops = 0
-
-      if count == 0:
-        pass
-
-      elif count == 1:  # 5 total items, we want 1 ride and 1 shop
-        num_rides = 1
-        num_shops = 1
-
-      elif count == 2:  # 8 total items, we want 3 rides and 2 shops
-        num_rides = 3
-        num_shops = 2
-
-      elif count == 4 or count == 5:  # 14 total items, we want 3 rides and 3 shops
-        num_rides = 3
-        num_shops = 3
-
-      elif count == 6:  # 20 total items, we want 5 rides and 4 shops
-        num_rides = 5
-        num_shops = 4
-
-      elif count == 7:  # 23 total items, we want 6 rides and 5 shops
-        num_rides = 6
-        num_shops = 5
-
-      add_rule(region_entrance, lambda state, num=num_rides: state.has_group("Rides", self.player, num))
-      add_rule(region_entrance, lambda state, num=num_shops: state.has_group("Shops", self.player, num))
-      count += 1
-
-    final_region = self.multiworld.get_region("Parkitect_Challenge_Level_" + str(current_level), self.player)
+    final_region = self.multiworld.get_region(f"Parkitect_Challenge_Level_{current_level}", self.player)
     final_region.connect(victory)
 
     all_locations = list(self.multiworld.get_locations(self.player))
     location_count = len(all_locations) - 1
 
     LoggerHelper.log(all_locations, "all locations")
+    visualize_regions(m, 'parkitect-regions')
     # They must be equal
     assert location_count == item_length, "Fillable Locations and Items aren't equal"
-
-    visualize_regions(m, 'parkitect-regions')

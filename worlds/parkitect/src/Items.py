@@ -1,13 +1,9 @@
-from asyncio.windows_events import NULL
-from BaseClasses import Item
-from ..data.constants import Scenario_Items
-from ..data.items import *
 import copy
 
-from .LoggerHelper import LoggerHelper
+from ..data.constants import Scenario_Items
+from ..data.items import *
 
-class ParkitectItem(Item):
-    game: str = "Parkitect"
+from .LoggerHelper import LoggerHelper
 
 def filter_dlc_items(items, options):
   """Add all DLC items"""

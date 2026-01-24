@@ -1,10 +1,13 @@
-from ..data.item_info import item_info
+from worlds.parkitect.data.constants import RULE_SHOP_STAT_EXEMPT_REVENUE_MAX, RULE_SHOP_STAT_EXEMPT_REVENUE_MIN, RULE_RIDE_STAT_EXEMPT_REVENUE_MIN, RULE_RIDE_STAT_EXEMPT_REVENUE_MAX
+from worlds.parkitect.src import LoggerHelper
+from worlds.parkitect.src.Item import ItemHelper
+from ..data.items import *
 
 # Helper Class to have a structure for randomization
 class Statistics:
   def __init__(
     self,
-    name,
+    name: ItemHelper,
     amount = 0,
     excitement = 0,
     intensity = 0,
@@ -13,12 +16,8 @@ class Statistics:
     revenue = 0,
     customers = 0,
   ):
-    is_shop = name in item_info["Shops"]
-    is_ride = name in item_info["Rides"]
-    is_coaster = name in item_info["Coaster Rides"]
-    is_trap = name in item_info['trap_items']
-
-    self.name = name
+    itemHelper = name
+    self.name = itemHelper.item
     self.amount = amount
     self.excitement = excitement
     self.intensity = intensity
@@ -28,16 +27,27 @@ class Statistics:
     self.customers = customers
 
     # its a category
-    if not is_shop and not is_ride and not is_coaster and not is_trap:
-      self.type = name
+    if not itemHelper.is_shop() and not itemHelper.is_ride() and not itemHelper.is_coaster() and not itemHelper.is_trap():
+      self.type = itemHelper.item
       self.name = ""
 
     else:
-      self.type = "shop" if is_shop else "coaster" if is_coaster else "ride" if is_ride else "trap" if is_trap else "unknown"
+      if itemHelper.is_shop():
+        self.type = TYPE_SHOPS
+        
+      elif itemHelper.is_coaster():
+        self.type = TYPE_COASTER_RIDES
+        
+      elif itemHelper.is_ride():
+        self.type = TYPE_RIDES
+        
+      elif itemHelper.is_trap():
+        self.type = TYPE_TRAPS
+
+    assert self.type != None, f"No Type found for namend item \"{self.name}\""
 
   def to_dict(self):
-
-    if self.type == 'coaster':
+    if self.type == TYPE_COASTER_RIDES:
       return {
         "name": self.name,
         "amount": self.amount,
@@ -50,7 +60,7 @@ class Statistics:
         "type": self.type,
       }
 
-    if self.type == 'shop' or self.type == 'ride' or self.type in item_info["shop_types"] or self.type in item_info["ride_types"]:
+    if self.type == TYPE_SHOPS or self.type == TYPE_RIDES or self.type in TYPES[TYPE_SHOPS] or self.type in TYPES[TYPE_RIDES]:
       return {
         "name": self.name,
         "amount": self.amount,
@@ -59,24 +69,21 @@ class Statistics:
         "type": self.type,
       }
 
-    if self.type == 'trap':
+    if self.type == TYPE_TRAPS:
       return {
         "name": self.name,
         "amount": self.amount,
         "type": self.type,
       }
 
-    #something went wrong here :D item not in item_info?
-    print('----------------- !!! ----------------')
-    print({
+    LoggerHelper.log({
         "name": self.name,
         "amount": self.amount,
         "type": self.type,
-      })
-    print('----------------- !!! ----------------')
+      }, "Statistics -> to_dict")
 
   @staticmethod
-  def random_roll(name: str, amount: int, rule, possible_prereqs = [], force = False):
+  def random_roll(itemHelper: ItemHelper, amount: int, rule, prerequisites = [], force = False):
     """
     Creates and returns a new Statistics object with randomly generated values.
     """
@@ -94,8 +101,9 @@ class Statistics:
     max_ride_revenue = rule.options.challenge_maximum_ride_revenue.value
     max_shop_revenue = rule.options.challenge_maximum_shop_revenue.value
     max_customers = rule.options.challenge_customers.value
-
-    if name in item_info["Coaster Rides"] or name == "Coaster Rides":
+    
+    # If its a coaster, set all coaster values
+    if itemHelper.is_coaster() or itemHelper.is_coaster_category():
       if rule.random.random() < .5 and max_excitement > 0:
         option_excitement = 0 if max_excitement <= 0 else round(rule.random.uniform(0, max_excitement))
 
@@ -108,28 +116,29 @@ class Statistics:
       if rule.random.random() < .5 and max_satisfaction > 0:
         option_satisfaction = 0 if max_satisfaction <= 0 else round(rule.random.uniform(0, max_satisfaction))
 
-    # Helps less good stat Coaster to reach it easier
-    if name in item_info["stat_exempt_coaster_rides"] or any(item in item_info["stat_exempt_coaster_rides"] for item in possible_prereqs):
-      if max_excitement >= 15:
-        option_excitement = min(15, option_excitement * 0.33)
-      if max_intensity >= 15:
-        option_intensity = min(15, option_intensity * 0.33)
-    
-        option_nausea = 0
-        option_satisfaction = option_satisfaction * .5
+      # Helps less good stat Coaster to reach it easier
+      if itemHelper.is_ride_stat_exempt() or any(item in RIDES[TYPE_STAT_EXEMPT] for item in prerequisites):
+        if max_excitement >= 15:
+          option_excitement = min(15, option_excitement * 0.33)
+        if max_intensity >= 15:
+          option_intensity = min(15, option_intensity * 0.33)
+      
+          option_nausea = 0
+          option_satisfaction = option_satisfaction * .5
 
-    if name in item_info["Rides"] or name == "Rides":
+    # if its a ride (also coasters!) add a revenue
+    if itemHelper.is_ride() or itemHelper.is_ride_category():
       if rule.random.random() < .5:
         option_revenue = round(rule.random.uniform(0, max_ride_revenue))
 
-    elif (name in item_info["Shops"] and name not in item_info['non_profitables']) or (name == "Shops" and any(item not in item_info["non_profitables"] for item in possible_prereqs)):
+    elif (itemHelper.is_shop() and not itemHelper.is_shop_non_profit()) or (itemHelper.is_shop_category() and any (item not in SHOPS[TYPE_NON_PROFIT] for item in prerequisites)):
       if rule.random.random() < .5:
         option_revenue = round(rule.random.uniform(0, max_shop_revenue))
 
-      if name in item_info['stat_exempt_shops'] and option_revenue > 500:
-        option_revenue = round(rule.random.uniform(200, 500))
+      if itemHelper.is_shop_stat_exempt() and option_revenue > RULE_SHOP_STAT_EXEMPT_REVENUE_MAX:
+        option_revenue = round(rule.random.uniform(RULE_SHOP_STAT_EXEMPT_REVENUE_MIN, RULE_SHOP_STAT_EXEMPT_REVENUE_MAX))
 
-    if name not in item_info['trap_items']:
+    if not itemHelper.is_trap():
       if rule.random.random() < .5:
         option_total_customers = round(rule.random.uniform(0, max_customers))
 
@@ -138,12 +147,12 @@ class Statistics:
       if no_stats and (rule.random.random() < .85 or force):
         option_total_customers = round(rule.random.uniform(0, max_customers))
 
-      if name in item_info['stat_exempt_rides'] and option_revenue > 200:
-        option_revenue = round(rule.random.uniform(0, 200))
+      if itemHelper.is_ride_stat_exempt() and option_revenue > RULE_RIDE_STAT_EXEMPT_REVENUE_MAX:
+        option_revenue = round(rule.random.uniform(RULE_RIDE_STAT_EXEMPT_REVENUE_MIN, RULE_RIDE_STAT_EXEMPT_REVENUE_MAX))
 
     # Create and return a new Statistics object
     return Statistics(
-      name = name,
+      name = itemHelper,
       amount = amount,
       excitement = option_excitement,
       intensity = option_intensity,
