@@ -360,7 +360,7 @@ class TrapGuestsMoney(Range):
     default = 5
 
 class TrapGuestsMoneyFlux(Choice):
-    f"""
+    """
     (If Guest Money Trap is enabled!)
     Decides if the Guest receive or/and lose money.
     """

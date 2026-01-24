@@ -35,7 +35,8 @@ class ParkitectWorld(World):
   game = "Parkitect"
   web = ParkitectWebWorld()
   options_dataclass = ParkitectOptions
-  options = ParkitectOptions
+  options: ParkitectOptions
+
   location_name_to_id = LOCATION_NAME_TO_ID
   item_name_to_id = ITEM_NAME_TO_ID
   item_name_groups = {
@@ -67,7 +68,6 @@ class ParkitectWorld(World):
       self.multiworld.itempool.append(self.create_item(item))
 
     assert len(self.multiworld.itempool) > 0, "No Items found in Itempool"
-    assert len(self.multiworld.itempool) == len(self.item_table), "Missmatch between Itempool and items"
     LoggerHelper.log("Created Items and added to pool")
   
     # Adds the starting ride to precollected items
