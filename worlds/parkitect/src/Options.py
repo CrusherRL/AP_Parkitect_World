@@ -1,5 +1,5 @@
 from enum import IntEnum
-from Options import Range, Choice, PerGameCommonOptions, OptionGroup, OptionCounter
+from Options import Range, Choice, PerGameCommonOptions, OptionGroup, Toggle
 from dataclasses import dataclass
 
 # Helpers
@@ -360,7 +360,7 @@ class TrapGuestsMoney(Range):
     default = 5
 
 class TrapGuestsMoneyFlux(Choice):
-    f"""
+    """
     (If Guest Money Trap is enabled!)
     Decides if the Guest receive or/and lose money.
     """
@@ -444,6 +444,87 @@ class SelectedProgressiveSpeedups(Choice):
     option_yes = 1
     default = 0
 
+# Parkitect Mods
+class ParkitectModsInfo(Toggle):
+    """
+    Enable or disable individual Parkitect mods below.
+    Steam Collection: https://steamcommunity.com/sharedfiles/filedetails/?id=3647109901
+
+    You can ignore this setting. It is always on.
+    """
+    display_name = "ℹ Parkitect Mods"
+    default = True
+
+class DragonShop(Toggle):
+    """Dragon Shop"""
+    default = True
+
+class TacoShop(Toggle):
+    """Taco Shop"""
+    default = True
+
+class PancakeShop(Toggle):
+    """Pancake Shop"""
+    default = True
+
+class RevolutionAttraction(Toggle):
+    """Revolution"""
+
+class MonsterAttraction(Toggle):
+    """Monster"""
+
+class FishBarrelAttraction(Toggle):
+    """Fish In A Barrel"""
+
+class InverterAndSomersaultAttraction(Toggle):
+    """Inverter & Somersault"""
+    default = True
+
+class CircusShowAttraction(Toggle):
+    """Circus Show"""
+    default = True
+
+class JumpAttraction(Toggle):
+    """Jump²"""
+
+class RockinTugAttraction(Toggle):
+    """Rockin' Tug"""
+    default = True
+
+class HopperAttraction(Toggle):
+    """Hopper"""
+
+class DemonDropAttraction(Toggle):
+    """Demon Drop"""
+
+class RotoShakeAttraction(Toggle):
+    """RotoShake"""
+
+class HexentanzAttraction(Toggle):
+    """Hexentanz"""
+
+class PowerSwingAndMegaSwingAttraction(Toggle):
+    """Power Swing & Mega Swing"""
+
+class KrakenAttackAttraction(Toggle):
+    """Kraken Attack"""
+    default = True
+
+class CorkscrewCoaster(Toggle):
+    """Corkscrew Coaster"""
+    default = True
+
+class InvertedLaunchCoaster(Toggle):
+    """Inverted Launch Coaster"""
+
+class QuadrupleRailCoaster(Toggle):
+    """Quadruple Rail Coaster"""
+    default = True
+
+class RetroSteelCoaster(Toggle):
+    """Retro Steel Coaster"""
+    default = True
+
 parkitect_option_groups = [
     OptionGroup("Scenario Options", [
         SelectedScenario,
@@ -501,6 +582,28 @@ parkitect_option_groups = [
         TrapGuestsMoneyFlux,
         SelectedProgressiveSpeedups
     ]),
+    OptionGroup("Parkitect Mods", [
+        ParkitectModsInfo,
+        DragonShop,
+        TacoShop,
+        PancakeShop,
+        RevolutionAttraction,
+        MonsterAttraction,
+        InverterAndSomersaultAttraction,
+        CircusShowAttraction,
+        JumpAttraction,
+        RockinTugAttraction,
+        HopperAttraction,
+        DemonDropAttraction,
+        RotoShakeAttraction,
+        HexentanzAttraction,
+        PowerSwingAndMegaSwingAttraction,
+        KrakenAttackAttraction,
+        CorkscrewCoaster,
+        InvertedLaunchCoaster,
+        QuadrupleRailCoaster,
+        RetroSteelCoaster,
+    ]),
 ]
 
 @dataclass
@@ -557,3 +660,26 @@ class ParkitectOptions(PerGameCommonOptions):
     goal_park_tickets: GoalParkTickets
     goal_shops: GoalShops
     goal_shop_profit: GoalShopProfit
+
+    # Parkitect Mods
+    parkitect_mods: ParkitectModsInfo
+    dragon_shop: DragonShop
+    taco_shop:  TacoShop
+    pancake_shop : PancakeShop
+    revolution_attraction : RevolutionAttraction
+    monster_attraction : MonsterAttraction
+    inverter_and_somersault_attraction : InverterAndSomersaultAttraction
+    circus_show_attraction : CircusShowAttraction
+    jump_attraction : JumpAttraction
+    rockin_tug_attraction : RockinTugAttraction
+    fish_barrel_attraction : FishBarrelAttraction
+    hopper_attraction : HopperAttraction
+    demon_drop_attraction : DemonDropAttraction
+    roto_shake_attraction : RotoShakeAttraction
+    hexentanz_attraction : HexentanzAttraction
+    power_swing_and_mega_swing_attraction : PowerSwingAndMegaSwingAttraction
+    kraken_attack_attraction : KrakenAttackAttraction
+    corkscrew_coaster : CorkscrewCoaster
+    inverted_launch_coaster : InvertedLaunchCoaster
+    quadruple_rail_coaster : QuadrupleRailCoaster
+    retro_steel_coaster : RetroSteelCoaster
