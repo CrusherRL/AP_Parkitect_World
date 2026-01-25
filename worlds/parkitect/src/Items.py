@@ -16,12 +16,12 @@ def filter_dlc_items(items, options):
   
   # booms_and_blooms
   if not options.dlc2.value:
-    for dlc_items in DLC[DLC_TASTE_OF_ADVENTURES].values():
+    for dlc_items in DLC[DLC_BOOMS_AND_BLOOMS].values():
       exclude_items.update(dlc_items)
   
   # dinos_and_dynasties
   if not options.dlc3.value:
-    for dlc_items in DLC[DLC_TASTE_OF_ADVENTURES].values():
+    for dlc_items in DLC[DLC_DINOS_AND_DYNASTIES].values():
       exclude_items.update(dlc_items)
 
   # Remove Items from exclude list
@@ -36,47 +36,49 @@ def filter_mod_items(items, options):
   filtered_items = items[:]
 
   if not options.dragon_shop:
-    filtered_items = [i for i in filtered_items if i != DRAGON_SHOP]
+    filtered_items.remove(DRAGON_SHOP)
   if not options.taco_shop:
-    filtered_items = [i for i in filtered_items if i != TACO_SHOP]
+    filtered_items.remove(TACO_SHOP)
   if not options.pancake_shop:
-    filtered_items = [i for i in filtered_items if i != PANCAKE_SHOP]
+    filtered_items.remove(PANCAKE_SHOP)
 
   if not options.revolution_attraction:
-    filtered_items = [i for i in filtered_items if i != REVOLUTION]
+    filtered_items.remove(REVOLUTION)
   if not options.monster_attraction:
-    filtered_items = [i for i in filtered_items if i != MONSTER]
+    filtered_items.remove(MONSTER)
   if not options.inverter_and_somersault_attraction:
-    filtered_items = [i for i in filtered_items if i not in [INVERTER, SOMERSAULT]]
+    filtered_items.remove(INVERTER)
+    filtered_items.remove(SOMERSAULT)
   if not options.circus_show_attraction:
-    filtered_items = [i for i in filtered_items if i != CIRCUS_SHOW]
+    filtered_items.remove(CIRCUS_SHOW)
   if not options.jump_attraction:
-    filtered_items = [i for i in filtered_items if i != JUMP]
+    filtered_items.remove(JUMP)
   if not options.rockin_tug_attraction:
-    filtered_items = [i for i in filtered_items if i != ROCKIN_TUG]
+    filtered_items.remove(ROCKIN_TUG)
   if not options.fish_barrel_attraction:
-    filtered_items = [i for i in filtered_items if i != FISH_IN_A_BARREL]
+    filtered_items.remove(FISH_IN_A_BARREL)
   if not options.hopper_attraction:
-    filtered_items = [i for i in filtered_items if i != HOPPER]
+    filtered_items.remove(HOPPER)
   if not options.demon_drop_attraction:
-    filtered_items = [i for i in filtered_items if i != DEMON_DROP]
+    filtered_items.remove(DEMON_DROP)
   if not options.roto_shake_attraction:
-    filtered_items = [i for i in filtered_items if i != ROTO_SHAKE]
+    filtered_items.remove(ROTO_SHAKE)
   if not options.hexentanz_attraction:
-    filtered_items = [i for i in filtered_items if i != HEXENTANZ]
+    filtered_items.remove(HEXENTANZ)
   if not options.kraken_attack_attraction:
-    filtered_items = [i for i in filtered_items if i != KRAKEN_ATTACK]
+    filtered_items.remove(KRAKEN_ATTACK)
   if not options.power_swing_and_mega_swing_attraction:
-    filtered_items = [i for i in filtered_items if i not in [POWER_SWING, MEGA_SWING]]
+    filtered_items.remove(POWER_SWING)
+    filtered_items.remove(MEGA_SWING)
 
   if not options.corkscrew_coaster:
-    filtered_items = [i for i in filtered_items if i != CORKSCREW_COASTER]
+    filtered_items.remove(CORKSCREW_COASTER)
   if not options.inverted_launch_coaster:
-    filtered_items = [i for i in filtered_items if i != INVERTED_LAUNCH_COASTER]
+    filtered_items.remove(INVERTED_LAUNCH_COASTER)
   if not options.quadruple_rail_coaster:
-    filtered_items = [i for i in filtered_items if i != QUADRUPLE_RAIL_COASTER]
+    filtered_items.remove(QUADRUPLE_RAIL_COASTER)
   if not options.retro_steel_coaster:
-    filtered_items = [i for i in filtered_items if i != RETRO_STEEL_COASTER]
+    filtered_items.remove(RETRO_STEEL_COASTER)
 
   return filtered_items
 
@@ -164,10 +166,9 @@ def set_items(world):
   scenario_items = copy.deepcopy(Scenario_Items[world.options.scenario.value])
   items = filter_from_options(scenario_items, world.options)
 
-  #starter = world.random.choice(items)
-  starter = items[0]
+  starter = world.random.choice(items)
+  #starter = items[0]
   items.remove(starter)
-
   items = add_filter_items(items, world.options)
 
   assert len(items) > 0, "No Items found"

@@ -1,7 +1,10 @@
 from ..data.items import RIDES, SHOPS, TYPE_ALL, ALL_ITEMS
 from ..data.locations import LOCATIONS
 
+DEBUG = False
+
 APWORLD_VERSION = "v1.3.0"
+THEME = "stone"
 BASE_ID = 3000000
 
 Scenario_Items = {

@@ -38,7 +38,6 @@ The randomizer can affect almost every system inside Parkitect, bringing chaos a
 #### 👷 Employees
 - Can be **hired**, **trained**, or **made tired**
 
-
 #### ☁️ Weather
 - **Rainy**, **Cloudy**, **Sunny**, or **Stormy**  
 
@@ -47,7 +46,7 @@ The randomizer can affect almost every system inside Parkitect, bringing chaos a
 - Their hunger, thirst, and tiredness levels may also change
 
 #### 🗺️ Scenario
-- Randomly adds **goals** with **custom rewards**
+- Randomly adds **Park goals**
 
 ---
 
@@ -69,6 +68,7 @@ Here’s what can appear in **other players’ worlds**:
 | **Employees (Traps)** | 💤 Tired, 🧠 Training, 🧑‍🔧 Hiring | Modifies employee states |
 | **Weather (Traps)** | 🌧️ Rainy / Stormy / Cloudy / Sunny | Alters weather conditions |
 | **Guests (Traps)** | 🧍 Spawning, 💀 Kill, 💸 Money (+/-), 🍔 Hungry, 🥤 Thirsty, 🚽 Toilet, 🤢 Vomit, 😡 Happiness, 😴 Tiredness, 🧨 Vandal | Alters guest states or spawns effects |
+| **Parkitect Mods** | Only from Collection | [Steam Collection](https://steamcommunity.com/sharedfiles/filedetails/?id=3647109901) |
 
 ---
 
@@ -81,7 +81,7 @@ A **Delivery Guy** (Handyman) will collect it and deliver it to the correct buil
 Once it arrives, the related AP item becomes **active/unlocked**.
 
 > Example:  
-> You receive a “Weather Control Voucher” → a package is delivered to the weather station → the new weather options unlock.
+> You receive a “Carousel” → a package is delivered to a specific Shop to unlock.
 
 ### ✅ Current Implementation
 For now, items are **instantly applied** to the game state upon reception.  
@@ -126,7 +126,7 @@ If you want to submit your own Parkitect scenario for the AP World:
 | **Operating Systems** | ✅ Tested on **Windows 10** and **MacOS Sequoia 15.6** | Not tested on **Linux** yet |
 | **Multiplayer** | ⚠️ Not Tested / Likely Unsupported | The mod was designed for single-player mode — multiplayer may cause sync issues |
 | **Game Version** | ✅ Steam release (1.12c) | Earlier versions before Steam release (1.12b2) won’t work |
-| **Other Mods** | ⚙️ Attraction/Shop Mods are Supported ([Steam Collection](https://steamcommunity.com/sharedfiles/filedetails/?id=3647109901)) ||
+| **Other Mods** | ⚙️ Attraction/Shop Mods are Supported | [Steam Collection](https://steamcommunity.com/sharedfiles/filedetails/?id=3647109901) |
 | **Performance** | ✅ Stable | No major FPS drops or memory issues during extended play |
 | **Archipelago Connection** | ✅ Tested with local and remote servers | No known connection issues |
 | **Archipelago Multigame** | ✅ Stable ||

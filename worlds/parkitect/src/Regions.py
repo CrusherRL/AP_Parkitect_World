@@ -3,8 +3,9 @@ from typing import Dict
 
 from BaseClasses import MultiWorld, Region, Location
 from worlds.generic.Rules import add_rule
+from worlds.parkitect.data.items import TYPE_RIDES, TYPE_SHOPS
 
-from ..data.constants import BASE_ID
+from ..data.constants import DEBUG
 from .LoggerHelper import LoggerHelper
 
 from Utils import visualize_regions
@@ -19,7 +20,7 @@ class Regions:
     self.location_name_to_id = location_name_to_id
 
   @staticmethod
-  def get_previous_region_from_parkitect_location(location_number: int):
+  def get_region_from_parkitect_location(location_number: int):
     if location_number <= 2:
       return "Parkitect_Challenge_Level_0"
 
@@ -129,6 +130,54 @@ class Regions:
     all_locations = list[Location](self.multiworld.get_locations(self.player))
     location_count = len(all_locations)
 
+    # Playthrough
+    for level_index in range(1, current_level):
+      region_name = f"Parkitect_Challenge_Level_{level_index}"
+      region = self.multiworld.get_region(region_name, self.player)
+      
+      if not region.entrances:
+        continue
+        
+      region_entrance = region.entrances[0]
+      num_shops = 0
+      num_rides = 0
+      
+      # Determine required ride and/or shop count based on level
+      if level_index == 1:
+        num_rides = 1
+        num_shops = 1
+
+      elif level_index == 2:
+        num_rides = 3
+        num_shops = 2
+
+      elif level_index == 3:
+        num_rides = 4
+        num_shops = 3
+
+      elif level_index == 4:
+        num_rides = 5
+        num_shops = 4
+
+      elif level_index == 5:
+        num_rides = 7
+        num_shops = 5
+
+      elif level_index == 6:
+        num_rides = 9
+        num_shops = 7
+
+      elif level_index == 7:
+        num_rides = 12
+        num_shops = 9
+
+      elif level_index == 8:
+        num_rides = 13
+        num_shops = 11
+      
+      add_rule(region_entrance, lambda state, count=num_rides: state.has_group(TYPE_RIDES, self.player, count))
+      add_rule(region_entrance, lambda state, count=num_shops: state.has_group(TYPE_SHOPS, self.player, count), "or" if level_index == 1 else "and")
+
     victory = Region("Victory", self.player, self.multiworld)
     victory.locations = [ParkitectLocation(self.player, "Victory", None, victory)]
     self.multiworld.regions.append(victory)
@@ -137,8 +186,9 @@ class Regions:
     final_region.connect(victory)
 
     LoggerHelper.log(all_locations, "all locations")
-    visualize_regions(m, 'parkitect-regions')
-    # They must be equal
+
+    if DEBUG:
+      visualize_regions(m, './worlds/parkitect/generated/parkitect-regions')
 
     LoggerHelper.log(item_length, "item_length")
     LoggerHelper.log(location_count, "location_count")

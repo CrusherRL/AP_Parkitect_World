@@ -9,10 +9,10 @@ from .src.Item import ParkitectItem
 from .src.Rules import Rules
 
 from .data.items import *
-from .data.constants import APWORLD_VERSION, ITEM_NAME_TO_ID, LOCATION_NAME_TO_ID
+from .data.constants import APWORLD_VERSION, ITEM_NAME_TO_ID, LOCATION_NAME_TO_ID, THEME
 
 class ParkitectWebWorld(WebWorld):
-  theme = "partyTime"
+  theme = THEME
 
   setup_en = Tutorial(
     "Multiworld Setup Guide",
@@ -98,7 +98,7 @@ class ParkitectWorld(World):
     self.multiworld.completion_condition[self.player] = lambda state: state.has("Victory", self.player)
 
   def set_rules(self) -> None:
-    #self.random.shuffle(self.item_table)
+    self.random.shuffle(self.item_table)
     Rules(self).set()
     LoggerHelper.log("Set Rules")
 
@@ -112,7 +112,6 @@ class ParkitectWorld(World):
     goal_park_tickets = self.options.goal_park_tickets.value
     goal_shops = self.options.goal_shops.value
     goal_shop_profit = self.options.goal_shop_profit.value
-
 
     seed = "_".join([
       str(self.options.scenario.value),

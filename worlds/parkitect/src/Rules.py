@@ -16,25 +16,18 @@ class Rules:
 
   def _set_parkitect_rule(self, rule_type, selected_item, location_number) -> None:
     LoggerHelper.log(location_number, "_set_parkitect_rule")
-    region_name = Regions.get_previous_region_from_parkitect_location(location_number)
-    assert region_name is not None and region_name != '', "Couldn't find Regionname for _set_parkitect_rule"
     
-    LoggerHelper.log(region_name, "region_name")
-    entrance = self.world.multiworld.get_region(region_name, self.world.player).entrances[0]
-    assert entrance is not None and entrance != '', f"Couldn't find entrance from Region \"{region_name}\""
-
-    #LoggerHelper.info(f"-> set_parkitect_rule rule_type: {rule_type}")
-    #LoggerHelper.info(f"-> set_parkitect_rule selected_item: {selected_item}")
-    #LoggerHelper.info(f"-> set_parkitect_rule location_number: {location_number}")
-    #LoggerHelper.info(f"-> set_parkitect_rule region_name: {region_name}")
-    #LoggerHelper.info(f"Entrance {entrance.name} existing rule: {entrance.access_rule}")
+    region_name = Regions.get_region_from_parkitect_location(location_number)
+    location = self.world.multiworld.get_region(region_name, self.world.player).entrances[0]
+    
+    assert location is not None, f"Couldn't find region \"{region_name}\" for location_number {location_number}"
 
     if rule_type == RULE_TYPE_PARKITECT_ITEM:
-      #add_rule(entrance, lambda state: state.has(selected_item, self.world.player))
+      add_rule(location, lambda state, item=selected_item: state.has(item, self.world.player))
       return
 
     if rule_type == RULE_TYPE_CATEGORY:
-      #add_rule(entrance, lambda state: state.has_group(selected_item, self.world.player))
+      add_rule(location, lambda state, category=selected_item: state.has_group(category, self.world.player))
       return
 
     assert rule_type in (
@@ -86,12 +79,8 @@ class Rules:
     LoggerHelper.log(self.world.starter, "starter")
 
     for number, parkitect_item in enumerate(self.world.item_table):
-      check = {
-        "location_id": number,
-        "item": None
-      }
-
       LoggerHelper.log(prerequisites, "prerequisites")
+      LoggerHelper.log(parkitect_item, "parkitect_item")
 
       # Chosen prerequisite
       if self.world.random.random() < difficulty_modifier:
@@ -117,7 +106,7 @@ class Rules:
         queued_prerequisites.append(parkitect_item)
 
       # Every fourth
-      if number == 2 or number % 5 == 0:
+      if number > 0 and (number == 2 or number % 4 == 0):
         for prereq in queued_prerequisites:
           prerequisites.append(prereq)
         queued_prerequisites.clear()

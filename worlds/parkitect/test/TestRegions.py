@@ -108,7 +108,7 @@ class TestRegions(unittest.TestCase):
 
         self.assertIn(next_region, [e.connected_region for e in region.exits])
 
-  def test_get_previous_region_from_parkitect_location(self):
+  def test_get_region_from_parkitect_location(self):
     expected = [
       "Parkitect_Challenge_Level_0",
       "Parkitect_Challenge_Level_0",
@@ -129,5 +129,5 @@ class TestRegions(unittest.TestCase):
     ]
 
     for index, level in enumerate(expected):
-      l = Regions.get_previous_region_from_parkitect_location(index)
+      l = Regions.get_region_from_parkitect_location(index)
       self.assertEqual(l, level)
