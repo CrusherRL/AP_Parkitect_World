@@ -77,7 +77,7 @@ class GoalGuests(Range): # GuestsInParkGoal
     """
     display_name = "Guest Goal"
     range_start = 1
-    range_end = 5000
+    range_end = 2500
     default = 1000
 
 class GoalMoney(Range): # MoneyGoal
@@ -121,7 +121,7 @@ class GoalRideProfit(Range): # RideProfitGoal
     Choose how much profit you need from all rides to win the scenario
     """
     display_name = "Ride Profit Goal"
-    default = 500
+    default = 1500
     range_start = 0
     range_end = 10000
 
@@ -139,7 +139,7 @@ class GoalShops(Range): # ShopsCountGoal
     Choose how many shops are required to win the scenario
     """
     display_name = "Shops Goal"
-    default = 15
+    default = 30
     range_start = 0
     range_end = 100
 
@@ -229,8 +229,8 @@ class ChallengeSkips(Range):
     """
     display_name = "Skips"
     range_start = 0
-    range_end = 15
-    default = 5
+    range_end = 30
+    default = 10
 
 # Traps
 # Traps - Player
@@ -255,7 +255,7 @@ class TrapAttractionBreakdown(Range):
 
 class TrapAttractionVoucher(Range):
     """
-    When found, few Guests will receive an Attraction Voucher in your Park! Adding traps will increase the total number of items in the world.
+    When found, certain Guests will receive an Attraction Voucher in your Park! Adding traps will increase the total number of items in the world.
     """
     display_name = "Attraction Voucher Trap"
     range_start = 0
@@ -334,7 +334,7 @@ class TrapWeather(Range):
 # Traps - Guests
 class TrapGuestsSpawn(Range):
     """
-    When found, a wave of new Guests appears in your Scenario! Adding traps will increase the total number of items in the world.
+    When found, a wave of certain Guests appears in your Scenario! Adding traps will increase the total number of items in the world.
     """
     display_name = "Guest Spawn Trap"
     range_start = 0
@@ -343,7 +343,7 @@ class TrapGuestsSpawn(Range):
 
 class TrapGuestsKill(Range):
     """
-    When found, few Guests will disappears in your Scenario! Adding traps will increase the total number of items in the world.
+    When found, certain Guests will disappears in your Scenario! Adding traps will increase the total number of items in the world.
     """
     display_name = "Guest Kill Trap"
     range_start = 0
@@ -352,7 +352,7 @@ class TrapGuestsKill(Range):
 
 class TrapGuestsMoney(Range):
     """
-    When found, few Guests will receive or lose their Money in your Park! Adding traps will increase the total number of items in the world.
+    When found, certain Guests will receive or lose their Money in your Park! Adding traps will increase the total number of items in the world.
     """
     display_name = "Guest Money Trap"
     range_start = 0
@@ -408,7 +408,7 @@ class TrapGuestsVomit(Range):
 
 class TrapGuestsHappiness(Range):
     """
-    When found, few Guests will just be happy! Adding traps will increase the total number of items in the world.
+    When found, certain Guests will just be happy! Adding traps will increase the total number of items in the world.
     """
     display_name = "Guest Happiness Trap"
     range_start = 0
@@ -417,7 +417,7 @@ class TrapGuestsHappiness(Range):
 
 class TrapGuestsTiredness(Range):
     """
-    When found, few Guests will just be tired! Adding traps will increase the total number of items in the world.
+    When found, certain Guests will just be tired! Adding traps will increase the total number of items in the world.
     """
     display_name = "Guest Tiredness Trap"
     range_start = 0
@@ -426,7 +426,7 @@ class TrapGuestsTiredness(Range):
 
 class TrapGuestsVandal(Range):
     """
-    When found, few Guests will be a Vandal! Adding traps will increase the total number of items in the world.
+    When found, certain Guests become a Vandal! Adding traps will increase the total number of items in the world.
     The difficulty decides how many Guests vandalising your Park!
     """
     display_name = "Guest Vandal Trap"
@@ -456,16 +456,13 @@ class ParkitectModsInfo(Toggle):
     default = True
 
 class DragonShop(Toggle):
-    """Dragon Shop"""
-    default = True
+    """Dragon Shop (Recommended)"""
 
 class TacoShop(Toggle):
-    """Taco Shop"""
-    default = True
+    """Taco Shop (Recommended)"""
 
 class PancakeShop(Toggle):
-    """Pancake Shop"""
-    default = True
+    """Pancake Shop (Recommended)"""
 
 class RevolutionAttraction(Toggle):
     """Revolution"""
@@ -478,21 +475,18 @@ class FishBarrelAttraction(Toggle):
 
 class InverterAndSomersaultAttraction(Toggle):
     """Inverter & Somersault"""
-    default = True
 
 class CircusShowAttraction(Toggle):
-    """Circus Show"""
-    default = True
+    """Circus Show (Recommended)"""
 
 class JumpAttraction(Toggle):
     """Jump²"""
 
 class RockinTugAttraction(Toggle):
-    """Rockin' Tug"""
-    default = True
+    """Rockin' Tug (Recommended)"""
 
 class HopperAttraction(Toggle):
-    """Hopper"""
+    """Hopper (Recommended)"""
 
 class DemonDropAttraction(Toggle):
     """Demon Drop"""
@@ -507,23 +501,19 @@ class PowerSwingAndMegaSwingAttraction(Toggle):
     """Power Swing & Mega Swing"""
 
 class KrakenAttackAttraction(Toggle):
-    """Kraken Attack"""
-    default = True
+    """Kraken Attack (Recommended)"""
 
 class CorkscrewCoaster(Toggle):
-    """Corkscrew Coaster"""
-    default = True
+    """Corkscrew Coaster (Recommended)"""
 
 class InvertedLaunchCoaster(Toggle):
     """Inverted Launch Coaster"""
 
 class QuadrupleRailCoaster(Toggle):
-    """Quadruple Rail Coaster"""
-    default = True
+    """Quadruple Rail Coaster (Recommended)"""
 
 class RetroSteelCoaster(Toggle):
-    """Retro Steel Coaster"""
-    default = True
+    """Retro Steel Coaster (Recommended)"""
 
 parkitect_option_groups = [
     OptionGroup("Scenario Options", [
@@ -593,6 +583,7 @@ parkitect_option_groups = [
         CircusShowAttraction,
         JumpAttraction,
         RockinTugAttraction,
+        FishBarrelAttraction,
         HopperAttraction,
         DemonDropAttraction,
         RotoShakeAttraction,
