@@ -3,7 +3,7 @@ from ..data.locations import LOCATIONS
 
 DEBUG = False
 
-APWORLD_VERSION = "v1.3.0"
+APWORLD_VERSION = "v1.3.3"
 THEME = "stone"
 BASE_ID = 3000000
 
