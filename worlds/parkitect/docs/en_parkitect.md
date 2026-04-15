@@ -45,55 +45,7 @@ The randomizer can affect almost every system inside Parkitect, bringing chaos a
 
 ---
 
-## 🎯 Goals
-You can configure multiple win conditions for your scenario. Each goal can be adjusted individually:
-
-### 👥 Guest Goal
-Defines how many guests must be in your park to win.  
-- **Range:** 1 – 2500  
-- **Default:** 1000  
-
-### 💰 Money Goal
-Requires reaching a certain amount of money.  
-- **Range:** 50,000 – 500,000  
-- **Default:** 100,000  
-
-### 🎢 Roller Coaster Goal
-Number of roller coasters required.  
-- **Range:** 0 – 12  
-- **Default:** 4  
-
-### 😀 Excitement Rating
-Minimum excitement required for a coaster to count.  
-Set to **0** to disable this requirement.  
-- **Range:** 0 – 80  
-- **Default:** 50  
-
-### 😬 Intensity Rating
-Minimum intensity required for a coaster to count.  
-Set to **0** to disable this requirement.  
-- **Range:** 0 – 80  
-- **Default:** 50  
-
-### 📈 Ride Profit Goal
-Total profit required from all rides.  
-- **Range:** 0 – 10,000  
-- **Default:** 1500  
-
-### 🎟️ Park Tickets Goal
-Number of park tickets that must be sold.  
-- **Range:** 0 – 20,000  
-- **Default:** 0  
-
-### 🏪 Shops Goal
-Number of shops required in the park.  
-- **Range:** 0 – 100  
-- **Default:** 30  
-
-### 💵 Shop Profit Goal
-Total profit required from shops.  
-- **Range:** 0 – 3,000  
-- **Default:** 500  
+## 🎯 Goals](https://github.com/CrusherRL/AP_Parkitect?tab=readme-ov-file#-goals)
 
 ---
 
