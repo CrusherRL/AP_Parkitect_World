@@ -5,47 +5,11 @@ It covers configuration, item handling, scenarios, and how cross-game interactio
 
 ---
 
-## 🎲 What Does Randomization Affect?
-
-The randomizer can affect almost every system inside Parkitect, bringing chaos and fun to your park management experience! 🎡
-
-### Randomized Categories
-
-### 🎢 Player
-- Adjust **Game Speed** (adds new options: `4x`, `5x`, `6x`, `7x`, `7x, `9x`)
-- Add **Money**
-
-### 🧍 Guests
-- Spawn guests
-- Modify their money (+/-)
-- Kill (remove) them
-- Change their needs (hungry, thirsty, happy, tired, bathroom)
-- Cause **vomiting**/**nausea**
-- Turn them into **vandals**
-
-### 🧑‍🔧 Employees
-- Hire automatically
-- Set **tired** state
-- Send for **training**
-
-### ☁️ Weather
-- Set to **Rainy**, **Cloudy**, **Sunny** or **Stormy**
-
-### 🎠 Attractions
-- Trigger **breakdowns**
-- Apply **vouchers**
-
-### 🍔 Stalls / Shops
-- Re-deliver ingredients
-- Set **cleaning tasks**
-- Apply **vouchers**
-
-### 🗺️ Scenario
-- Add any **goal** with any **reward**
+## 🎲 [What Does Randomization Affect?](https://github.com/CrusherRL/AP_Parkitect?tab=readme-ov-file#-what-can-the-randomizer-change)
 
 ---
 
-## 🎯 Goals](https://github.com/CrusherRL/AP_Parkitect?tab=readme-ov-file#-goals)
+## 🎯 [Goals](https://github.com/CrusherRL/AP_Parkitect?tab=readme-ov-file#-goals)
 
 ---
 
