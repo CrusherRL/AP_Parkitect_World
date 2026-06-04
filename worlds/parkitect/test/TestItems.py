@@ -30,8 +30,9 @@ class TestItems(unittest.TestCase):
     self.assertNotIn(starter, self.parkitectWorld.multiworld.precollected_items)
 
   def test_item_classifications(self):
-    progression_items = RIDES[TYPE_ALL] + SHOPS[TYPE_ALL]
+    progression_items = RIDES[TYPE_ALL] + SHOPS[TYPE_ALL] + UTILITY_BUILDINGS[TYPE_ALL] + [DECORATION_THEME_GENERIC]
     trap_items = TRAPS[TYPE_ALL]
+    useful_items = [theme for theme in DECORATION_THEMES[TYPE_ALL] if theme != DECORATION_THEME_GENERIC]
 
     for item in progression_items:
       i = self.parkitectWorld.create_item(item)
@@ -46,6 +47,10 @@ class TestItems(unittest.TestCase):
       self.assertEqual(i.classification, ItemClassification.trap)
       self.assertEqual(i.code, ITEM_NAME_TO_ID[item])
       self.assertEqual(i.player, self.player)
+
+    for item in useful_items:
+      i = self.parkitectWorld.create_item(item)
+      self.assertEqual(i.classification, ItemClassification.useful)
 
   def test_add_items_to_pool__traps(self):
     self._add_items_to_pool(ENTERPRISE, TRAPS[TYPE_ALL])

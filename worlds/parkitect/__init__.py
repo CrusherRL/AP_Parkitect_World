@@ -2,14 +2,14 @@ from BaseClasses import Tutorial, ItemClassification
 from worlds.AutoWorld import World, WebWorld
 
 from .src.Options import ParkitectOptions, parkitect_option_groups
-from .src.Items import set_items
+from .src.Items import get_items
 from .src.Regions import Regions
 from .src.LoggerHelper import LoggerHelper
 from .src.Item import ParkitectItem
 from .src.Rules import Rules
 
 from .data.items import *
-from .data.constants import APWORLD_VERSION, ITEM_NAME_TO_ID, LOCATION_NAME_TO_ID, THEME
+from .data.constants import APWORLD_VERSION, ITEM_NAME_TO_ID, LOCATION_NAME_TO_ID, THEME, FAIL
 
 class ParkitectWebWorld(WebWorld):
   theme = THEME
@@ -46,7 +46,8 @@ class ParkitectWorld(World):
     TYPE_WATER_RIDES: RIDES[TYPE_WATER_RIDES],
     TYPE_TRANSPORT_RIDES: RIDES[TYPE_TRANSPORT_RIDES],
     TYPE_RIDES: RIDES[TYPE_ALL],
-    TYPE_SHOPS: RIDES[TYPE_ALL],
+    TYPE_SHOPS: SHOPS[TYPE_ALL],
+    TYPE_DECORATIONS: DECORATION_THEMES[TYPE_ALL],
   }
 
   def __init__(self, multiworld, player: int):
@@ -56,7 +57,7 @@ class ParkitectWorld(World):
     self.challenges = [] # Parkitect Challenge Window
 
   def generate_early(self) -> None:
-    self.item_table, self.starter = set_items(self)
+    self.item_table, self.starter = get_items(self)
     LoggerHelper.log(len(self.item_table), "Total Items")
 
   def create_regions(self) -> None:
@@ -77,14 +78,17 @@ class ParkitectWorld(World):
     LoggerHelper.log("Added starter as precollect")
 
   def create_item(self, item: str) -> ParkitectItem:
+    # A classification must be set, otherwise its an error
     classification = ItemClassification.useful
 
-    # A classification must be set, otherwise its an error
-    if item in RIDES[TYPE_ALL] or item in SHOPS[TYPE_ALL]:
+    if item in RIDES[TYPE_ALL] or item in SHOPS[TYPE_ALL] or item in UTILITY_BUILDINGS[TYPE_ALL] or item == DECORATION_THEME_GENERIC:
       classification = ItemClassification.progression
 
     elif item in TRAPS[TYPE_ALL]:
       classification = ItemClassification.trap
+
+    elif item in STATISTICS[TYPE_ALL]:
+      classification = ItemClassification.filler
 
     assert item in self.item_name_to_id, f"Item \"{item}\" is not found in \"item_name_to_id\""
 
@@ -152,10 +156,6 @@ class ParkitectWorld(World):
         "enabled": goal_shops > 0,
         "value": goal_shops,
       },
-      #"shops2": {
-      #  "enabled": len(goal_shops) > 0,
-      #  "value": goal_shops,
-      #},
     }
     slot_data = self.options.as_dict(
       "scenario",
@@ -164,13 +164,22 @@ class ParkitectWorld(World):
     slot_data["rules"] = self.options.as_dict(
       "difficulty",
       "guests_money_flux",
-      "progressive_speedups"
+      "progressive_speedups",
+      "utility_buildings",
+      "decorations",
+      "statistics",
+      "trap_link"
     )
     
     slot_data["seed"] = seed
     slot_data["version"] = APWORLD_VERSION
     slot_data["challenges"] = self.challenges
 
-    LoggerHelper.info(self.challenges)
+    LoggerHelper.log(self.item_table, "Item Pool")
+    LoggerHelper.log(dict(slot_data), "Slot data")
+
+    if FAIL == True:
+      if len(goal_shops) > 0:
+        return True
 
     return slot_data

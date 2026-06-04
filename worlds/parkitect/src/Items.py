@@ -2,6 +2,7 @@ import copy
 
 from ..data.constants import Scenario_Items
 from ..data.items import *
+from ..src.Item import ItemHelper
 
 from .LoggerHelper import LoggerHelper
 
@@ -146,12 +147,33 @@ def add_filter_items(items, options):
   for each in range(options.trap_guests_vandal.value):
     items.append(GUEST_VANDAL_TRAP)
 
-  for each in range(options.challenge_skips.value):
-    items.append(SKIP)
+  for each in range(options.trap_research.value):
+    items.append(RESEARCH_TRAP)
 
-  if (options.progressive_speedups.value == 1):
+  if options.progressive_speedups:
     for each in range(6):
       items.append(PROGRESSIVE_SPEED)
+
+  # Utility Buildings
+  if not options.utility_buildings:
+    for utility_building in UTILITY_BUILDINGS[TYPE_ALL]:
+      if utility_building in items:
+        items.remove(utility_building)
+
+  # Statistics
+  if not options.statistics:
+    for statistic in STATISTICS[TYPE_ALL]:
+      if statistic in items:
+        items.remove(statistic)
+
+  # Decoration Themes
+  if not options.decorations:
+    for decoration_theme_tag in DECORATION_THEMES[TYPE_ALL]:
+      if decoration_theme_tag in items:
+        items.remove(decoration_theme_tag)
+
+  for each in range(options.challenge_skips.value):
+    items.append(CHALLENGE_SKIP)
 
   return items
 
@@ -161,20 +183,36 @@ def filter_from_options(scenario_items, options):
   items = filter_dlc_items(scenario_items, options)
   return filter_mod_items(items, options)
 
-def set_items(world):
+def find_starter(items, world):
+  starter = world.random.choice(items)
+  item_helper = ItemHelper(starter)
+
+  if item_helper.is_coaster() or item_helper.is_ride() or item_helper.is_shop():
+    return starter
+
+  return find_starter(items, world)
+
+def get_items(world):
   assert world.options.scenario.value in Scenario_Items, "Scenario not found"
   scenario_items = copy.deepcopy(Scenario_Items[world.options.scenario.value])
   items = filter_from_options(scenario_items, world.options)
 
-  starter = world.random.choice(items)
-  #starter = items[0]
+  starter = find_starter(items, world)
   items.remove(starter)
   items = add_filter_items(items, world.options)
 
   assert len(items) > 0, "No Items found"
   assert starter not in items, "Starter is listed as usual item. That should never be the case!"
 
-  LoggerHelper.log(items, "items")
   LoggerHelper.log(starter, "starter")
 
   return items, starter
+
+def get_extra_checks(world) -> list[str]:
+  extra_checks: list[str] = []
+
+  extra_checks.extend([CHALLENGE_PARK_GUESTS] * int(world.options.challenge_park_guests.value))
+  extra_checks.extend([CHALLENGE_EMPLOYEES] * int(world.options.challenge_employees.value))
+  extra_checks.extend([CHALLENGE_PAY_MONEY] * int(world.options.challenge_pay_money.value))
+
+  return extra_checks

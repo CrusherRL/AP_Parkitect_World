@@ -18,20 +18,23 @@ It covers configuration, item handling, scenarios, and how cross-game interactio
 Certain Parkitect items can be sent across the network and affect other players’ parks.  
 Here’s what can appear in **other players’ worlds**:
 
-| Category | Item | Description |
-|-----------|------|-------------|
-| **Player** | 💰 Money (+/-) | Changes player’s park funds |
-| **Attractions** | 🎠 Attractions |
-| | ⚙️ Breakdowns | Random attraction malfunctions (excluding crashes & lightning strikes) |
-| | 🎟️ Vouchers ||
-| **Shops / Stalls** | 🍔 Stall/Shop ||
-| | 📦 Ingredient Re-Delivery | Triggers restocking |
-| | 🧹 Cleaning Job | Assigns janitors |
-| | 🎟️ Vouchers ||
-| **Employees (Traps)** | 💤 Tired, 🧠 Training, 🧑‍🔧 Hiring | Modifies employee states |
-| **Weather (Traps)** | 🌧️ Rainy / Stormy / Cloudy / Sunny | Alters weather conditions |
-| **Guests (Traps)** | 🧍 Spawning, 💀 Kill, 💸 Money (+/-), 🍔 Hungry, 🥤 Thirsty, 🚽 Toilet, 🤢 Vomit, 😡 Happiness, 😴 Tiredness, 🧨 Vandal | Alters guest states or spawns effects |
-| **Parkitect Mods** | Only from Collection | [Steam Collection](https://steamcommunity.com/sharedfiles/filedetails/?id=3647109901) |
+| Category              | Item                                                                                                                    | Description                                                                           |
+|-----------------------|-------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------|
+| **Player**            | 💰 Money                                                                                                                | Adding player’s park funds                                                            |
+| **Attractions**       | 🎠 Itself                                                                                                               |
+|                       | ⚙️ Breakdowns                                                                                                           | Random attraction malfunctions (excluding crashes & lightning strikes)                |
+|                       | 🎟️ Vouchers                                                                                                            | Vouchers for a free ride                                                              |
+| **Shops / Stalls**    | 🍔 Itself                                                                                                               |                                                                                       |
+|                       | 📦 Ingredient Re-Delivery                                                                                               | Triggers restocking                                                                   |
+|                       | 🧹 Cleaning Job                                                                                                         | Assigns janitors to clean a Stall/Shop                                                |
+|                       | 🎟️ Vouchers                                                                                                            | Vouchers for a free drink/food                                                        |
+| **Utility Buidlings** | 🏭 Itself                                                                                                               |
+| **Employees (Traps)** | 💤 Tired, 🧠 Training, 🧑‍🔧 Hiring                                                                                     | Modifies employee states                                                              |
+| **Weather (Traps)**   | 🌧️ Rainy / Stormy / Cloudy / Sunny                                                                                     | Alters weather conditions                                                             |
+| **Guests (Traps)**    | 🧍 Spawning, 💀 Kill, 💸 Money (+/-), 🍔 Hungry, 🥤 Thirsty, 🚽 Toilet, 🤢 Vomit, 😡 Happiness, 😴 Tiredness, 🧨 Vandal | Alters guest states or spawns effects                                                 |
+| **Research (Traps)**  | Attraction/Shop/Decoration Theme                                                                                        | Put it into the research Pool                                                         |
+| **Statistics**        | All type of Statistics                                                                                                  |                                                                                       |
+| **Parkitect Mods**    | Only from Collection                                                                                                    | [Steam Collection](https://steamcommunity.com/sharedfiles/filedetails/?id=3647109901) |
 
 ---
 

@@ -20,6 +20,20 @@ class Regions:
     self.location_name_to_id = location_name_to_id
 
   @staticmethod
+  def get_location_name_from_index(location_number: int) -> str:
+    if location_number < 3:
+      return f"Challenge_{location_number + 1}_0"
+
+    challenge_map = {
+      0: "Challenge_1",
+      1: "Challenge_2",
+      2: "Challenge_3",
+    }
+    challenge = challenge_map[location_number % 3]
+    id_num = location_number // 3
+    return f"{challenge}_{id_num}"
+
+  @staticmethod
   def get_region_from_parkitect_location(location_number: int):
     if location_number <= 2:
       return "Parkitect_Challenge_Level_0"
