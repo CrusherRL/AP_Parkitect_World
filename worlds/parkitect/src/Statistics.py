@@ -1,7 +1,8 @@
 from worlds.parkitect.data.constants import RULE_SHOP_STAT_EXEMPT_REVENUE_MAX, RULE_SHOP_STAT_EXEMPT_REVENUE_MIN, RULE_RIDE_STAT_EXEMPT_REVENUE_MIN, RULE_RIDE_STAT_EXEMPT_REVENUE_MAX
-from worlds.parkitect.src import LoggerHelper
 from worlds.parkitect.src.Item import ItemHelper
+from .. import LoggerHelper
 from ..data.items import *
+from ..data.constants import ATTRACTION_DECO_RATING_CHANCES, ATTRACTION_DECO_RATING
 
 # Helper Class to have a structure for randomization
 class Statistics:
@@ -15,6 +16,7 @@ class Statistics:
     satisfaction = 0,
     revenue = 0,
     customers = 0,
+    deco = "",
   ):
     itemHelper = name
     self.name = itemHelper.item
@@ -25,6 +27,7 @@ class Statistics:
     self.satisfaction = satisfaction
     self.revenue = revenue
     self.customers = customers
+    self.deco = deco
 
     # its a category
     if not itemHelper.is_shop() and not itemHelper.is_ride() and not itemHelper.is_coaster() and not itemHelper.is_trap():
@@ -57,10 +60,21 @@ class Statistics:
         "satisfaction": self.satisfaction,
         "revenue": self.revenue,
         "customers": self.customers,
+        "deco": self.deco,
         "type": self.type,
       }
 
-    if self.type == TYPE_SHOPS or self.type == TYPE_RIDES or self.type in TYPES[TYPE_SHOPS] or self.type in TYPES[TYPE_RIDES]:
+    if self.type == TYPE_RIDES or self.type in TYPES[TYPE_RIDES]:
+      return {
+        "name": self.name,
+        "amount": self.amount,
+        "revenue": self.revenue,
+        "customers": self.customers,
+        "deco": self.deco,
+        "type": self.type,
+      }
+
+    if self.type == TYPE_SHOPS or self.type in TYPES[TYPE_SHOPS]:
       return {
         "name": self.name,
         "amount": self.amount,
@@ -76,6 +90,19 @@ class Statistics:
         "type": self.type,
       }
 
+    if self.type == CHALLENGE_PARK_GUESTS or self.type == CHALLENGE_EMPLOYEES or self.type == CHALLENGE_PAY_MONEY:
+      type = "Guest"
+      if self.type == CHALLENGE_EMPLOYEES:
+        type = "Employee"
+      if self.type == CHALLENGE_PAY_MONEY:
+        type = "Money"
+
+      return {
+        "name": self.name.replace(str(self.amount), "X"),
+        "amount": self.amount,
+        "type": type,
+      }
+
     LoggerHelper.log({
         "name": self.name,
         "amount": self.amount,
@@ -83,7 +110,7 @@ class Statistics:
       }, "Statistics -> to_dict")
 
   @staticmethod
-  def random_roll(itemHelper: ItemHelper, amount: int, rule, prerequisites = [], force = False):
+  def random_roll(itemHelper: ItemHelper, amount: int, world, prerequisites = [], force = False):
     """
     Creates and returns a new Statistics object with randomly generated values.
     """
@@ -94,27 +121,27 @@ class Statistics:
     option_revenue = 0
     option_total_customers = 0
 
-    max_excitement = rule.options.challenge_maximum_excitement.value
-    max_intensity = rule.options.challenge_maximum_intensity.value
-    max_nausea = rule.options.challenge_maximum_nausea.value
-    max_satisfaction = rule.options.challenge_maximum_satisfaction.value
-    max_ride_revenue = rule.options.challenge_maximum_ride_revenue.value
-    max_shop_revenue = rule.options.challenge_maximum_shop_revenue.value
-    max_customers = rule.options.challenge_customers.value
-    
+    max_excitement = world.options.challenge_maximum_excitement.value
+    max_intensity = world.options.challenge_maximum_intensity.value
+    max_nausea = world.options.challenge_maximum_nausea.value
+    max_satisfaction = world.options.challenge_maximum_satisfaction.value
+    max_ride_revenue = world.options.challenge_maximum_ride_revenue.value
+    max_shop_revenue = world.options.challenge_maximum_shop_revenue.value
+    max_customers = world.options.challenge_customers.value
+
     # If its a coaster, set all coaster values
     if itemHelper.is_coaster() or itemHelper.is_coaster_category():
-      if rule.random.random() < .5 and max_excitement > 0:
-        option_excitement = 0 if max_excitement <= 0 else round(rule.random.uniform(0, max_excitement))
+      if world.random.random() < .5 and max_excitement > 0:
+        option_excitement = 0 if max_excitement <= 0 else round(world.random.uniform(0, max_excitement))
 
-      if rule.random.random() < .5 and max_intensity > 0:
-        option_intensity = 0 if max_intensity <= 0 else round(rule.random.uniform(0, max_intensity))
+      if world.random.random() < .5 and max_intensity > 0:
+        option_intensity = 0 if max_intensity <= 0 else round(world.random.uniform(0, max_intensity))
 
-      if rule.random.random() < .5 and max_nausea > 0:
-        option_nausea = 0 if max_nausea <= 0 else round(rule.random.uniform(0, max_nausea))
+      if world.random.random() < .5 and max_nausea > 0:
+        option_nausea = 0 if max_nausea <= 0 else round(world.random.uniform(0, max_nausea))
 
-      if rule.random.random() < .5 and max_satisfaction > 0:
-        option_satisfaction = 0 if max_satisfaction <= 0 else round(rule.random.uniform(0, max_satisfaction))
+      if world.random.random() < .5 and max_satisfaction > 0:
+        option_satisfaction = 0 if max_satisfaction <= 0 else round(world.random.uniform(0, max_satisfaction))
 
       # Helps less good stat Coaster to reach it easier
       if itemHelper.is_ride_stat_exempt() or any(item in RIDES[TYPE_STAT_EXEMPT] for item in prerequisites):
@@ -128,27 +155,27 @@ class Statistics:
 
     # if its a ride (also coasters!) add a revenue
     if itemHelper.is_ride() or itemHelper.is_ride_category():
-      if rule.random.random() < .5:
-        option_revenue = round(rule.random.uniform(0, max_ride_revenue))
+      if world.random.random() < .5:
+        option_revenue = round(world.random.uniform(0, max_ride_revenue))
 
     elif (itemHelper.is_shop() and not itemHelper.is_shop_non_profit()) or (itemHelper.is_shop_category() and any (item not in SHOPS[TYPE_NON_PROFIT] for item in prerequisites)):
-      if rule.random.random() < .5:
-        option_revenue = round(rule.random.uniform(0, max_shop_revenue))
+      if world.random.random() < .5:
+        option_revenue = round(world.random.uniform(0, max_shop_revenue))
 
       if itemHelper.is_shop_stat_exempt() and option_revenue > RULE_SHOP_STAT_EXEMPT_REVENUE_MAX:
-        option_revenue = round(rule.random.uniform(RULE_SHOP_STAT_EXEMPT_REVENUE_MIN, RULE_SHOP_STAT_EXEMPT_REVENUE_MAX))
+        option_revenue = round(world.random.uniform(RULE_SHOP_STAT_EXEMPT_REVENUE_MIN, RULE_SHOP_STAT_EXEMPT_REVENUE_MAX))
 
     if not itemHelper.is_trap():
-      if rule.random.random() < .5:
-        option_total_customers = round(rule.random.uniform(0, max_customers))
+      if world.random.random() < .5:
+        option_total_customers = round(world.random.uniform(0, max_customers))
 
       no_stats = option_excitement == 0 and option_intensity == 0 and option_nausea == 0 and option_revenue == 0 and option_total_customers == 0
 
-      if no_stats and (rule.random.random() < .85 or force):
-        option_total_customers = round(rule.random.uniform(0, max_customers))
+      if no_stats and (world.random.random() < .85 or force):
+        option_total_customers = round(world.random.uniform(0, max_customers))
 
       if itemHelper.is_ride_stat_exempt() and option_revenue > RULE_RIDE_STAT_EXEMPT_REVENUE_MAX:
-        option_revenue = round(rule.random.uniform(RULE_RIDE_STAT_EXEMPT_REVENUE_MIN, RULE_RIDE_STAT_EXEMPT_REVENUE_MAX))
+        option_revenue = round(world.random.uniform(RULE_RIDE_STAT_EXEMPT_REVENUE_MIN, RULE_RIDE_STAT_EXEMPT_REVENUE_MAX))
 
     # Create and return a new Statistics object
     return Statistics(
@@ -160,5 +187,30 @@ class Statistics:
       satisfaction = option_satisfaction,
       revenue = option_revenue,
       customers = option_total_customers,
+      deco = "",
     )
   
+  def try_add_deco_rating(self, itemHelper: ItemHelper, world):
+    enabled_deco = world.options.challenge_enable_decoration.value
+
+    if not enabled_deco or not (itemHelper.is_coaster() or not itemHelper.is_ride()):
+      return self
+
+    if world.random.random() > .33:
+      return self
+
+    if (self.amount > 3):
+      self.amount = 3
+
+    self.deco = self.get_rating(world.options.difficulty.value, world)
+    return self
+
+  def get_rating(self, difficulty: int, world):
+    chances = ATTRACTION_DECO_RATING_CHANCES[difficulty]
+
+    index = world.random.choices(
+        population=list(chances.keys()),
+        weights=list(chances.values()),
+        k=1,
+    )[0]
+    return ATTRACTION_DECO_RATING[index];

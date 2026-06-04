@@ -1,6 +1,6 @@
 from BaseClasses import Item
 
-from ..data.items import SHOPS, RIDES, TRAPS, TYPE_ALL, TYPES, TYPE_SHOPS, TYPE_NON_PROFIT, TYPE_STAT_EXEMPT, TYPE_RIDES, TYPE_COASTER_RIDES
+from ..data.items import RESEARCH_TRAP, SHOPS, RIDES, STATISTICS, TRAPS, TYPE_ALL, TYPES, TYPE_SHOPS, TYPE_NON_PROFIT, TYPE_STAT_EXEMPT, TYPE_RIDES, TYPE_COASTER_RIDES, CHALLENGE_PARK_GUESTS, CHALLENGE_EMPLOYEES, CHALLENGE_PAY_MONEY, DECORATION_THEMES
 
 class ParkitectItem(Item):
   game: str = "Parkitect"
@@ -38,3 +38,18 @@ class ItemHelper:
 
   def is_trap(self) -> bool:
     return self.item in TRAPS[TYPE_ALL]
+
+  def is_challenge_park_guests(self) -> bool:
+    return self.item == CHALLENGE_PARK_GUESTS
+  
+  def is_challenge_employees(self) -> bool:
+    return self.item == CHALLENGE_EMPLOYEES
+
+  def is_challenge_pay_money(self) -> bool:
+    return self.item == CHALLENGE_PAY_MONEY
+
+  def is_decoration_themes(self) -> bool:
+    return self.item in DECORATION_THEMES[TYPE_ALL]
+
+  def is_statistic(self) -> bool:
+    return self.item in STATISTICS[TYPE_ALL]

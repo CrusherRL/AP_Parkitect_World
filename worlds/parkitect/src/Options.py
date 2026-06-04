@@ -70,13 +70,33 @@ class SelectedDLC3(Choice):
     option_yes = 1
     default = 0
 
+# Extra Items
+class UtilityBuildings(Toggle):
+    """
+    Adding all 4 Utility Buildings to the pool.
+    """
+    default = False
+
+class Decorations(Toggle):
+    """
+    Adding all 11 Decoration Themes to the pool.
+    (9 Items if not having DLC \"Dinos and Dynasties DLC\")
+    """
+    default = False
+
+class Statistics(Toggle):
+    """
+    Adding all 32 Statistics to the pool.
+    """
+    default = False
+
 # Goals
 class GoalGuests(Range): # GuestsInParkGoal
     """
     Choose how many guests are required to win the scenario
     """
     display_name = "Guest Goal"
-    range_start = 1
+    range_start = 200
     range_end = 2500
     default = 1000
 
@@ -222,6 +242,41 @@ class ChallengeMaximumShopRevenue(Range):
     range_start = 0
     range_end = 2500
     default = 0
+
+class ChallengeDecorationRating(Toggle):
+    """
+    Determines if a challenge need an Attraction with a specific Decoration rating.
+    Diffictuly depending on the value.
+    """
+
+class ChallengeParkGuests(Range):
+    f"""
+    Adding Challenge with \"Have X amount of Guests in your Park\""
+    """
+    display_name = "Challenge: X Park Guest"
+    range_start = 0
+    range_end = 25
+    default = 15
+
+class ChallengeEmployees(Range):
+    """
+    Adding Challenge with \"Have X amount of Employees\""
+    Difficulty depends on the Experience Level an Employee must have
+    """
+    display_name = "Challenge: X Employees"
+    range_start = 0
+    range_end = 25
+    default = 10
+
+class ChallengePayMoney(Range):
+    """
+    Adding Challenge with \"Pay X amount of Money\""
+    Depending on the Difficulty and if \"goal_money\" is set
+    """
+    display_name = "Challenge: Pay X Money"
+    range_start = 0
+    range_end = 30
+    default = 20
 
 class ChallengeSkips(Range):
     """
@@ -433,16 +488,33 @@ class TrapGuestsVandal(Range):
     range_start = 0
     range_end = 30
     default = 10
-    
-class SelectedProgressiveSpeedups(Choice):
+
+# Traps - Research
+class TrapResearchTrap(Range):
+    """
+    When found, certain Decoration (Path Attachments included) Theme, Attraction/s or Shop/s have to be researched again.
+    """
+    display_name = "Research Trap"
+    range_start = 0
+    range_end = 35
+    default = 20
+
+# TrapLink
+class EnableTrapLink(Toggle):
+    """
+    When a player found a Trap, it will spread to everyone that has TrapLink enabled!
+    """
+    display_name = "Trap Link"
+    default = False
+
+# Speedups
+class SelectedProgressiveSpeedups(Toggle):
     """
     If included, the ability to use the speedups at the window will be restricted behind an item. 6 items total will be added, each progressively unlocking a faster speed.
     Game Speedups (0x, 1x, 2x, 3x) are always usable.
     """
     display_name = "Progressive Speedups"
-    option_no = 0
-    option_yes = 1
-    default = 0
+    default = False
 
 # Parkitect Mods
 class ParkitectModsInfo(Toggle):
@@ -525,6 +597,11 @@ parkitect_option_groups = [
         SelectedDLC2,
         SelectedDLC3
     ]),
+    OptionGroup("Extra items", [
+        UtilityBuildings,
+        Decorations,
+        Statistics
+    ]),
     OptionGroup("Goal Options", [
         GoalGuests,
         GoalMoney,
@@ -535,6 +612,20 @@ parkitect_option_groups = [
         GoalParkTickets,
         GoalShops,
         GoalShopProfit
+    ]),
+    OptionGroup("Challenges/Checks", [
+        ChallengeCustomers,
+        ChallengeMaximumExcitement,
+        ChallengeMaximumIntensity,
+        ChallengeMaximumNausea,
+        ChallengeMaximumSatisfaction,
+        ChallengeMaximumRideRevenue,
+        ChallengeMaximumShopRevenue,
+        ChallengeDecorationRating,
+        ChallengeParkGuests,
+        ChallengeEmployees,
+        ChallengePayMoney,
+        ChallengeSkips,
     ]),
     OptionGroup("Traps", [
         TrapPlayerMoney,
@@ -556,17 +647,9 @@ parkitect_option_groups = [
         TrapGuestsVomit,
         TrapGuestsHappiness,
         TrapGuestsTiredness,
-        TrapGuestsVandal
-    ]),
-    OptionGroup("Challenges", [
-        ChallengeCustomers,
-        ChallengeMaximumExcitement,
-        ChallengeMaximumIntensity,
-        ChallengeMaximumNausea,
-        ChallengeMaximumSatisfaction,
-        ChallengeMaximumRideRevenue,
-        ChallengeMaximumShopRevenue,
-        ChallengeSkips,
+        TrapGuestsVandal,
+        TrapResearchTrap,
+        EnableTrapLink
     ]),
     OptionGroup("Rules", [
         TrapGuestsMoneyFlux,
@@ -605,7 +688,37 @@ class ParkitectOptions(PerGameCommonOptions):
     dlc2: SelectedDLC2
     dlc3: SelectedDLC3
 
-    # traps
+    # Extra Items
+    utility_buildings: UtilityBuildings
+    decorations: Decorations
+    statistics: Statistics
+    
+    # Goals
+    goal_guests: GoalGuests
+    goal_money: GoalMoney
+    goal_coasters: GoalCoasters
+    goal_coaster_excitement: GoalCoasterExcitement
+    goal_coaster_intensity: GoalCoasterIntensity
+    goal_ride_profit: GoalRideProfit
+    goal_park_tickets: GoalParkTickets
+    goal_shops: GoalShops
+    goal_shop_profit: GoalShopProfit
+
+    # Challenges / Checks
+    challenge_customers: ChallengeCustomers
+    challenge_maximum_excitement: ChallengeMaximumExcitement
+    challenge_maximum_intensity: ChallengeMaximumIntensity
+    challenge_maximum_nausea: ChallengeMaximumNausea
+    challenge_maximum_satisfaction: ChallengeMaximumSatisfaction
+    challenge_maximum_ride_revenue: ChallengeMaximumRideRevenue
+    challenge_maximum_shop_revenue: ChallengeMaximumShopRevenue
+    challenge_enable_decoration: ChallengeDecorationRating
+    challenge_park_guests: ChallengeParkGuests
+    challenge_employees: ChallengeEmployees
+    challenge_pay_money: ChallengePayMoney
+    challenge_skips: ChallengeSkips
+
+    # Traps
     trap_player_money: TrapPlayerMoney
     trap_attraction_breakdown: TrapAttractionBreakdown
     trap_attraction_voucher: TrapAttractionVoucher
@@ -626,31 +739,12 @@ class ParkitectOptions(PerGameCommonOptions):
     trap_guests_happiness: TrapGuestsHappiness
     trap_guests_tiredness: TrapGuestsTiredness
     trap_guests_vandal: TrapGuestsVandal
+    trap_research: TrapResearchTrap
+    trap_link: EnableTrapLink
 
     # Parkitect Mod rules.
     guests_money_flux: TrapGuestsMoneyFlux
     progressive_speedups: SelectedProgressiveSpeedups
-
-    # challenges
-    challenge_customers: ChallengeCustomers
-    challenge_maximum_excitement: ChallengeMaximumExcitement
-    challenge_maximum_intensity: ChallengeMaximumIntensity
-    challenge_maximum_nausea: ChallengeMaximumNausea
-    challenge_maximum_satisfaction: ChallengeMaximumSatisfaction
-    challenge_maximum_ride_revenue: ChallengeMaximumRideRevenue
-    challenge_maximum_shop_revenue: ChallengeMaximumShopRevenue
-    challenge_skips: ChallengeSkips
-    
-    # the obvious
-    goal_guests: GoalGuests
-    goal_money: GoalMoney
-    goal_coasters: GoalCoasters
-    goal_coaster_excitement: GoalCoasterExcitement
-    goal_coaster_intensity: GoalCoasterIntensity
-    goal_ride_profit: GoalRideProfit
-    goal_park_tickets: GoalParkTickets
-    goal_shops: GoalShops
-    goal_shop_profit: GoalShopProfit
 
     # Parkitect Mods
     parkitect_mods: ParkitectModsInfo
