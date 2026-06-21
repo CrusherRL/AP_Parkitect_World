@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 from BaseClasses import MultiWorld
 
 from .. import ParkitectWorld
-from ..data.constants import APWORLD_VERSION
+from ..data.constants import AP_WORLD_VERSION
 from ..data.items import CAR_RIDE
 
 
@@ -35,6 +35,6 @@ class TestWorld(unittest.TestCase):
     slot_data = self.parkitect_world.fill_slot_data()
 
     self.assertIn("trap_link", slot_data["rules"])
-    self.assertEqual(slot_data["version"], APWORLD_VERSION)
+    self.assertEqual(slot_data["version"], AP_WORLD_VERSION)
     self.assertEqual(slot_data["challenges"], self.parkitect_world.challenges)
     self.assertIn("Tester", slot_data["seed"])

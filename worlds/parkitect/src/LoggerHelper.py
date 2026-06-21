@@ -17,3 +17,8 @@ class LoggerHelper:
     if DEBUG:
       logger.info(thing)
       logger.info("")
+
+  @staticmethod
+  def force_info(thing):
+    logger.info(thing)
+    logger.info("")
