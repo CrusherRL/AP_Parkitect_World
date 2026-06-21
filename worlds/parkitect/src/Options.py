@@ -8,6 +8,43 @@ class Scenario(IntEnum):
     dusty_ridge_ranch = 1
     the_broken_atoll = 2
     magma_falls = 3
+    maple_meadows = 100
+    chanute_airfield = 101
+    victoria_lake = 102
+    western_roundup = 103
+    coral_caldera = 104
+    mystic_oasis = 105
+    nova_labs = 106
+    archipelago_adventures = 107
+    adventure_island = 108
+    batavia_cay = 109
+    ice_shelf_islands = 110
+    happyco_harbor = 111
+    biscayne_beach = 112
+    highway_hijinks = 113
+    honey_hills = 114
+    orchard_acres = 115
+    coaster_canyon = 116
+    hickory_hill = 117
+    pagoda_valley = 118
+    kaiserberg = 119
+    sakura_gardens = 120
+    silica_slopes = 121
+    disaster_peaks = 122
+    robopark = 123
+    sheer_cliffs = 124
+    zalgonia = 125
+    happyco_bakery = 126
+    yucatan_ridge = 200
+    brimstone_peak = 201
+    candyland = 202
+    timber_creek = 203
+    jungle_adventure = 204
+    technopolis = 205
+    dragon_valley = 206
+    victoria_island = 207
+    celeste_mountain = 208
+    the_moon = 209
 
 class Difficulty(IntEnum):
     easy = 0
@@ -24,12 +61,105 @@ class DLC(IntEnum):
 class SelectedScenario(Choice):
     """
     Choose which scenario you'd like to play!
+
+    Custom Campaign:
+    0 - "Archipelago - Lakeside Gardens"
+    1 - "Archipelago - Dusty Ridge Ranch,
+    2 - "Archipelago - The Broken Atoll,
+    3 - "Archipelago - Magma Falls"
+
+    Main Campaign:
+    100 - "Maple Meadows"
+    101 - "Chanute Airfield"
+    102 - "Victoria Lake"
+    103 - "Western Roundup"
+    104 - "Coral Caldera"
+    105 - "Mystic Oasis"
+    106 - "Nova Labs"
+    107 - "Archipelago Adventures"
+    108 - "Adventure Island"
+    109 - "Batavia Cay"
+    110 - "Ice-Shelf Islands"
+    111 - "HappyCo Harbor"
+    112 - "Biscayne Beach"
+    113 - "Highway Hijinks"
+    114 - "Honey Hills"
+    115 - "Orchard Acres"
+    116 - "Coaster Canyon"
+    117 - "Hickory Hill"
+    118 - "Pagoda Valley"
+    119 - "Kaiserberg"
+    120 - "Sakura Gardens"
+    121 - "Silica Slopes"
+    122 - "Disaster Peaks"
+    123 - "Robopark"
+    124 - "Sheer Cliffs"
+    125 - "Zalgonia"
+    126 - "HappyCo. Bakery"
+
+    Taste of Adventure Campaign:
+    200 - "Yucatán Ridge"
+    201 - "Brimstone Peak"
+    202 - "Candyland"
+    203 - "Timber Creek"
+    204 - "Jungle Adventure"
+    205 - "Technopolis"
+    206 - "Dragon Valley"
+    207 - "Victoria Island"
+    208 - "Celeste Mountain"
+    209 - "The Moon"
     """
     display_name = "Scenario"
     option_lakeside_gardens = Scenario.lakeside_gardens.value
     option_dusty_ridge_ranch = Scenario.dusty_ridge_ranch.value
     option_the_broken_atoll = Scenario.the_broken_atoll.value
     option_magma_falls = Scenario.magma_falls.value
+    option_maple_meadows = Scenario.maple_meadows.value
+    option_chanute_airfield = Scenario.chanute_airfield.value
+    option_victoria_lake = Scenario.victoria_lake.value
+    option_western_roundup = Scenario.western_roundup.value
+    option_coral_caldera = Scenario.coral_caldera.value
+    option_mystic_oasis = Scenario.mystic_oasis.value
+    option_nova_labs = Scenario.nova_labs.value
+    option_archipelago_adventures = Scenario.archipelago_adventures.value
+    option_adventure_island = Scenario.adventure_island.value
+    option_batavia_cay = Scenario.batavia_cay.value
+    option_ice_shelf_islands = Scenario.ice_shelf_islands.value
+    option_happyco_harbor = Scenario.happyco_harbor.value
+    option_biscayne_beach = Scenario.biscayne_beach.value
+    option_highway_hijinks = Scenario.highway_hijinks.value
+    option_honey_hills = Scenario.honey_hills.value
+    option_orchard_acres = Scenario.orchard_acres.value
+    option_coaster_canyon = Scenario.coaster_canyon.value
+    option_hickory_hill = Scenario.hickory_hill.value
+    option_pagoda_valley = Scenario.pagoda_valley.value
+    option_kaiserberg = Scenario.kaiserberg.value
+    option_sakura_gardens = Scenario.sakura_gardens.value
+    option_silica_slopes = Scenario.silica_slopes.value
+    option_disaster_peaks = Scenario.disaster_peaks.value
+    option_robopark = Scenario.robopark.value
+    option_sheer_cliffs = Scenario.sheer_cliffs.value
+    option_zalgonia = Scenario.zalgonia.value
+    option_happyco_bakery = Scenario.happyco_bakery.value
+    option_yucatan_ridge = Scenario.yucatan_ridge.value
+    option_brimstone_peak = Scenario.brimstone_peak.value
+    option_candyland = Scenario.candyland.value
+    option_timber_creek = Scenario.timber_creek.value
+    option_jungle_adventure = Scenario.jungle_adventure.value
+    option_technopolis = Scenario.technopolis.value
+    option_dragon_valley = Scenario.dragon_valley.value
+    option_victoria_island = Scenario.victoria_island.value
+    option_celeste_mountain = Scenario.celeste_mountain.value
+    option_the_moon = Scenario.the_moon.value
+
+class GuaranteedUnlockedStarter(Choice):
+    """
+    Starter Attraction/Shop is guaranteed unlocked from the beginning.
+    """
+    display_name = "Guaranteed unlocked Starter"
+    option_no = 0
+    option_yes = 1
+    default = 1
 
 class SelectedDifficulty(Choice):
     """
@@ -590,6 +720,7 @@ class RetroSteelCoaster(Toggle):
 parkitect_option_groups = [
     OptionGroup("Scenario Options", [
         SelectedScenario,
+    GuaranteedUnlockedStarter,
         SelectedDifficulty
     ]),
     OptionGroup("DLC Options", [
@@ -683,6 +814,7 @@ parkitect_option_groups = [
 @dataclass
 class ParkitectOptions(PerGameCommonOptions):
     difficulty: SelectedDifficulty
+    guaranteed_unlocked_starter: GuaranteedUnlockedStarter
     scenario: SelectedScenario
     dlc1: SelectedDLC1
     dlc2: SelectedDLC2

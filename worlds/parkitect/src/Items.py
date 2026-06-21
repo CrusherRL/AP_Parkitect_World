@@ -1,6 +1,6 @@
 import copy
 
-from ..data.constants import Scenario_Items
+from ..data.constants import Scenario_Items, Scenario_Items_Starters
 from ..data.items import *
 from ..src.Item import ItemHelper
 
@@ -184,10 +184,15 @@ def filter_from_options(scenario_items, options):
   return filter_mod_items(items, options)
 
 def find_starter(items, world):
-  starter = world.random.choice(items)
+  available_items = items[:]
+
+  if world.options.guaranteed_unlocked_starter.value and world.options.scenario.value in Scenario_Items_Starters:
+    available_items = Scenario_Items_Starters[world.options.scenario.value]
+
+  starter = world.random.choice(available_items)
   item_helper = ItemHelper(starter)
 
-  if item_helper.is_coaster() or item_helper.is_ride() or item_helper.is_shop():
+  if item_helper.is_ride() or item_helper.is_shop():
     return starter
 
   return find_starter(items, world)

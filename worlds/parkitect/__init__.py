@@ -9,7 +9,7 @@ from .src.Item import ParkitectItem
 from .src.Rules import Rules
 
 from .data.items import *
-from .data.constants import APWORLD_VERSION, ITEM_NAME_TO_ID, LOCATION_NAME_TO_ID, THEME, FAIL
+from .data.constants import AP_WORLD_VERSION, ITEM_NAME_TO_ID, LOCATION_NAME_TO_ID, THEME, FAIL, TASTE_OF_ADVENTURE_SCENARIOS
 
 class ParkitectWebWorld(WebWorld):
   theme = THEME
@@ -56,7 +56,12 @@ class ParkitectWorld(World):
     self.item_table = []
     self.challenges = [] # Parkitect Challenge Window
 
+  def validate_scenario_dlc(self) -> None:
+    if self.options.scenario.value in TASTE_OF_ADVENTURE_SCENARIOS:
+      assert self.options.dlc1.value, f"Parkitect scenario \"{self.options.scenario.value}\" requires DLC \"{self.options.dlc1.display_name}\" to be set to yes."
+
   def generate_early(self) -> None:
+    self.validate_scenario_dlc()
     self.item_table, self.starter = get_items(self)
     LoggerHelper.log(len(self.item_table), "Total Items")
 
@@ -172,7 +177,7 @@ class ParkitectWorld(World):
     )
     
     slot_data["seed"] = seed
-    slot_data["version"] = APWORLD_VERSION
+    slot_data["version"] = AP_WORLD_VERSION
     slot_data["challenges"] = self.challenges
 
     LoggerHelper.log(self.item_table, "Item Pool")
@@ -180,6 +185,7 @@ class ParkitectWorld(World):
 
     if FAIL == True:
       if len(goal_shops) > 0:
+        LoggerHelper.force_info(self.starter)
         return True
 
     return slot_data
