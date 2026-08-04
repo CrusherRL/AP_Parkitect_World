@@ -7,7 +7,7 @@ from worlds.generic.Rules import add_rule
 
 from ..data.items import *
 from ..src.Items import get_extra_checks
-from ..data.constants import ATTRACTION_DECO_RATING_INDEX, CHALLENGE_PARK_GUESTS_RANGES, CHALLENGE_EMPLOYEE_RANGES, RULE_TYPE_PARKITECT_ITEM, RULE_TYPE_CATEGORY, RULE_RIDE_STAT_EXEMPT_REVENUE_MAX, RULE_RIDE_STAT_EXEMPT_REVENUE_MIN, RULE_SHOP_STAT_EXEMPT_REVENUE_MIN, RULE_SHOP_STAT_EXEMPT_REVENUE_MAX, TIER_2_PROGRESS, TIER_3_PROGRESS, TIER_4_PROGRESS, CHALLENGE_PAY_MONEY_RANGES, RULE_TYPE_DECORATION
+from ..data.constants import ATTRACTION_DECO_RATING_INDEX, CHALLENGE_PARK_GUESTS_RANGES, CHALLENGE_EMPLOYEE_RANGES, RULE_TYPE_PARKITECT_ITEM, RULE_TYPE_CATEGORY, RULE_RIDE_STAT_EXEMPT_REVENUE_MAX, RULE_RIDE_STAT_EXEMPT_REVENUE_MIN, RULE_SHOP_STAT_EXEMPT_REVENUE_MIN, RULE_SHOP_STAT_EXEMPT_REVENUE_MAX, TIER_2_PROGRESS, TIER_3_PROGRESS, TIER_4_PROGRESS, TIER_5_PROGRESS, CHALLENGE_PAY_MONEY_RANGES, RULE_TYPE_DECORATION, CHANCE_MEDIUM, CHANCE_VERY_HIGH, ROUND_DIGITS_NONE, ROUND_DIGITS
 
 from .LoggerHelper import LoggerHelper
 
@@ -59,24 +59,38 @@ class Rules:
 
     return .25
 
-  @staticmethod
-  def determine_item_category(item: str) -> str:
-    if (item in SHOPS[TYPE_ALL]):
-      return TYPE_SHOPS
+  def _is_difficulty(self, difficulty: Difficulty) -> bool:
+    return self.world.options.difficulty == difficulty.value
 
-    if (item in RIDES[TYPE_CALM_RIDES]):
+  @staticmethod
+  def determine_item_category(item: str, should_be_generic_type: bool = False) -> str:
+    if should_be_generic_type:
+      if item in SHOPS[TYPE_ALL]:
+        return TYPE_SHOPS
+      return TYPE_RIDES
+
+    if item in SHOPS[TYPE_SHOP_DRINKS]:
+      return TYPE_SHOP_DRINKS
+
+    if item in SHOPS[TYPE_SHOP_FOOD]:
+      return TYPE_SHOP_FOOD
+
+    if item in SHOPS[TYPE_SHOP_FACILITIES]:
+      return TYPE_SHOP_FACILITIES
+
+    if item in RIDES[TYPE_CALM_RIDES]:
       return TYPE_CALM_RIDES
 
-    if (item in RIDES[TYPE_THRILL_RIDES]):
+    if item in RIDES[TYPE_THRILL_RIDES]:
       return TYPE_THRILL_RIDES
 
-    if (item in RIDES[TYPE_COASTER_RIDES]):
+    if item in RIDES[TYPE_COASTER_RIDES]:
       return TYPE_COASTER_RIDES
 
-    if (item in RIDES[TYPE_TRANSPORT_RIDES]):
+    if item in RIDES[TYPE_TRANSPORT_RIDES]:
       return TYPE_TRANSPORT_RIDES
 
-    if (item in RIDES[TYPE_WATER_RIDES]):
+    if item in RIDES[TYPE_WATER_RIDES]:
       return TYPE_WATER_RIDES
 
     raise AssertionError(f"No Item Category found for item \"{item}\"")
@@ -141,13 +155,14 @@ class Rules:
 
       # Is category
       else:
-        item = Rules.determine_item_category(self.world.random.choice(prerequisites))
+        should_be_generic_type = self.world.random.random() < CHANCE_MEDIUM
+        item = Rules.determine_item_category(self.world.random.choice(prerequisites), should_be_generic_type)
         LoggerHelper.log(item, "Chosen category")
         self._set_parkitect_rule(RULE_TYPE_CATEGORY, item, number)
 
       progress = number / item_table_length
-      itemHelper = self._find_challenge(item, number)
-      check = self._create_check(number, itemHelper, prerequisites, progress)
+      item_helper = self._find_challenge(item, number)
+      check = self._create_check(number, item_helper, prerequisites, progress)
       LoggerHelper.log(check, "check")
       self.world.challenges.append(check)
 
@@ -181,7 +196,7 @@ class Rules:
 
     return ItemHelper(item)
 
-  def _create_check(self, number: int, itemHelper: ItemHelper, prerequisites: list, progress: float) -> dict[str, str|int]:
+  def _create_check(self, number: int, item_helper: ItemHelper, prerequisites: list, progress: float) -> dict[str, str|int]:
     min = 1
     check = {
       "location_id": number,
@@ -189,20 +204,20 @@ class Rules:
     }
 
     # Pay Money -> {money}
-    if itemHelper.is_challenge_pay_money():
+    if item_helper.is_challenge_pay_money():
       money = self.determine_pay_money_max()
-      check["item"] = Statistics(itemHelper, money).to_dict()
+      check["item"] = Statistics(item_helper, money).to_dict()
 
     # Park Guests -> {guests}
-    elif itemHelper.is_challenge_park_guests():
+    elif item_helper.is_challenge_park_guests():
       guests = self.determine_park_guests_max(progress)
-      check["item"] = Statistics(itemHelper, guests).to_dict()
+      check["item"] = Statistics(item_helper, guests).to_dict()
 
     # Employees -> {employee}
-    elif itemHelper.is_challenge_employees():
+    elif item_helper.is_challenge_employees():
       type = self.world.random.choice(EMPLOYEES[TYPE_ALL])
       employees = self.determine_employee_max(type, progress)
-      check["item"] = Statistics(itemHelper, employees).to_dict()
+      check["item"] = Statistics(item_helper, employees).to_dict()
       check["item"]["name"] = type
 
     # Here begins stuff with Attraction / Shop and its categories
@@ -212,116 +227,332 @@ class Rules:
       # max: 2
       max = 2
 
-      if itemHelper.is_coaster() or itemHelper.is_coaster_category():
+      if item_helper.is_coaster() or item_helper.is_coaster_type():
         max = 1
 
       check["item"] = Statistics(
-        itemHelper,
+        item_helper,
         self.world.random.randint(min, max),
       ).to_dict()
 
     # --- Tier 2: -> 10% ---
-    elif progress <= TIER_2_PROGRESS: 
+    elif progress <= TIER_2_PROGRESS:
       customers = 0
-      
+
       # Shop -> max: 3
-      # Shop Category -> max: 6
-      if itemHelper.is_shop() or itemHelper.is_shop_category():
+      # Shop Category Type -> max: 6
+      if item_helper.is_shop() or item_helper.is_shop_category():
         max = 3
         shop_revenue = 0
+        shop_profit = 0
 
-        if itemHelper.is_shop_category():
+        if item_helper.is_shop_type():
           max = 6
 
-        # We can make shop_revenue if shop can make good money
-        if not itemHelper.is_shop_non_profit() and self.world.random.random() < .5:
+        # We can make shop_revenue or shop_profit if shop can make good money
+        if not item_helper.is_shop_non_profit() and self.world.random.random() < CHANCE_MEDIUM:
           shop_revenue = round(self.world.random.uniform(
-            0, 
+            0,
             self.world.options.challenge_maximum_shop_revenue.value
-          ))
+          ), ROUND_DIGITS)
 
-        if self.world.random.random() < .5:
+          shop_profit = round(self.world.random.uniform(
+            0,
+            self.world.options.challenge_maximum_shop_profit.value
+          ), ROUND_DIGITS)
+
+        if self.world.random.random() < CHANCE_MEDIUM:
           customers = round(self.world.random.uniform(
-            0, 
-            self.world.options.challenge_customers.value
-          ))
+            0,
+            self.world.options.challenge_maximum_customers.value
+          ), ROUND_DIGITS_NONE)
 
-        # Both given? i only want 1
-        if shop_revenue > 0 and customers > 0:
-          # Coin flip to decide which one to keep
-          if self.world.random.random() < 0.5:
-            customers = 0
-
+        if shop_revenue > 0 and shop_profit > 0:
+          if self.world.random.random() < CHANCE_MEDIUM:
+            shop_profit = 0
           else:
             shop_revenue = 0
 
-        if itemHelper.is_shop_stat_exempt() and shop_revenue > RULE_SHOP_STAT_EXEMPT_REVENUE_MAX:
-          shop_revenue = round(self.world.random.uniform(RULE_SHOP_STAT_EXEMPT_REVENUE_MIN, RULE_SHOP_STAT_EXEMPT_REVENUE_MAX))
+        # Both given? i only want 1
+        if (shop_revenue > 0 and shop_profit > 0) and customers > 0:
+          # Coin flip to decide which one to keep
+          if self.world.random.random() < CHANCE_MEDIUM:
+            customers = 0
+          else:
+            shop_revenue = 0
+            shop_profit = 0
+
+        if item_helper.is_shop_stat_exempt() and shop_revenue > RULE_SHOP_STAT_EXEMPT_REVENUE_MAX:
+          shop_revenue = round(
+            self.world.random.uniform(RULE_SHOP_STAT_EXEMPT_REVENUE_MIN, RULE_SHOP_STAT_EXEMPT_REVENUE_MAX),
+            ROUND_DIGITS)
 
         check["item"] = Statistics(
-          itemHelper,
+          item_helper,
           self.world.random.randint(min, max),
           revenue=shop_revenue,
-          customers=customers
+          profit=shop_profit,
+          customers=customers,
         ).to_dict()
 
-      # Ride -> max: 3
-      # Ride Category -> max: 5
-      # Coaster -> max: 2
-      # Ride Category -> max: 2
-      elif itemHelper.is_ride() or itemHelper.is_ride_category():
-        max = 3
+      # Ride -> max: 2
+      # Ride Category Type -> max: 4
+      # Coaster + Type -> max: 1
+      elif item_helper.is_ride() or item_helper.is_ride_category():
+        max = 2
         ride_revenue = 0
+        ride_profit = 0
+        ride_photos = 0
 
-        if itemHelper.is_ride_category():
-          max = 5
+        if item_helper.is_ride_type():
+          max = 4
 
-        elif itemHelper.is_coaster() or itemHelper.is_coaster_category():
-          max = 2
+        elif item_helper.is_coaster() or item_helper.is_coaster_type():
+          max = 1
 
-        if self.world.random.random() < .5:
+          if self.world.random.random() < CHANCE_VERY_HIGH:
+            ride_photos = round(self.world.random.uniform(
+              0,
+              self.world.options.challenge_maximum_photos.value
+            ), ROUND_DIGITS_NONE)
+
+        if self.world.random.random() < CHANCE_MEDIUM:
           ride_revenue = round(self.world.random.uniform(
-            0, 
+            0,
             self.world.options.challenge_maximum_ride_revenue.value
-          ))
+          ), ROUND_DIGITS)
 
-        if itemHelper.is_ride_stat_exempt() and ride_revenue > RULE_RIDE_STAT_EXEMPT_REVENUE_MAX:
-          ride_revenue = round(self.world.random.uniform(RULE_RIDE_STAT_EXEMPT_REVENUE_MIN, RULE_RIDE_STAT_EXEMPT_REVENUE_MAX))
+        if self.world.random.random() < CHANCE_MEDIUM:
+          ride_profit = round(self.world.random.uniform(
+            0,
+            self.world.options.challenge_maximum_ride_profit.value
+          ), ROUND_DIGITS)
 
-        if self.world.random.random() < .5:
+        if item_helper.is_ride_stat_exempt() and ride_revenue > RULE_RIDE_STAT_EXEMPT_REVENUE_MAX:
+          ride_revenue = round(
+            self.world.random.uniform(RULE_RIDE_STAT_EXEMPT_REVENUE_MIN, RULE_RIDE_STAT_EXEMPT_REVENUE_MAX),
+            ROUND_DIGITS)
+
+        if self.world.random.random() < CHANCE_MEDIUM:
           customers = round(self.world.random.uniform(
-            0, 
-            self.world.options.challenge_customers.value
-          ))
+            0,
+            self.world.options.challenge_maximum_customers.value
+          ), ROUND_DIGITS_NONE)
 
-        # Both given? i only want 1
-        if ride_revenue > 0 and customers > 0:
-          # Coin flip to decide which one to keep
-          if self.world.random.random() < 0.5:
-            customers = 0
-
+        if ride_revenue > 0 and ride_profit > 0:
+          if self.world.random.random() < CHANCE_MEDIUM:
+            ride_profit = 0
           else:
             ride_revenue = 0
 
+        # Both given? i only want 1
+        if (ride_revenue > 0 or ride_profit > 0) and customers > 0:
+          # Coin flip to decide which one to keep
+          if self.world.random.random() < CHANCE_MEDIUM:
+            customers = 0
+          else:
+            ride_profit = 0
+            ride_revenue = 0
+
         check["item"] = Statistics(
-            itemHelper,
-            self.world.random.randint(min, max),
-            revenue=ride_revenue,
-            customers=customers
-        ).try_add_deco_rating(itemHelper, self.world).to_dict()
+          item_helper,
+          self.world.random.randint(min, max),
+          revenue=ride_revenue,
+          profit=ride_profit,
+          customers=customers,
+          photos=ride_photos
+        ).try_add_deco_rating(item_helper, self.world).to_dict()
+
+    # --- Tier 2: -> 18% ---
+    elif progress <= TIER_3_PROGRESS:
+      customers = 0
+
+      # Shop -> max: 3
+      # Shop Category Type -> max: 6
+      if item_helper.is_shop() or item_helper.is_shop_category():
+        max = 3
+        shop_revenue = 0
+        shop_profit = 0
+        shop_vouchers = 0
+
+        if item_helper.is_shop_type():
+          max = 6
+
+        # We can make shop_revenue or shop_profit if shop can make good money
+        if not item_helper.is_shop_non_profit() and self.world.random.random() < CHANCE_MEDIUM:
+          shop_revenue = round(self.world.random.uniform(
+            0,
+            self.world.options.challenge_maximum_shop_revenue.value
+          ), ROUND_DIGITS)
+
+          shop_profit = round(self.world.random.uniform(
+            0,
+            self.world.options.challenge_maximum_shop_profit.value
+          ), ROUND_DIGITS)
+
+        if self.world.random.random() < CHANCE_MEDIUM:
+          customers = round(self.world.random.uniform(
+            0,
+            self.world.options.challenge_maximum_customers.value
+          ), ROUND_DIGITS_NONE)
+
+        if self._is_difficulty(Difficulty.extreme) and (
+                item_helper.is_drink_shop() or item_helper.is_food_shop()) and self.world.random.random() < CHANCE_MEDIUM:
+          shop_vouchers = round(self.world.random.uniform(
+            0,
+            self.world.options.challenge_maximum_shop_vouchers.value
+          ), ROUND_DIGITS_NONE)
+
+        if shop_revenue > 0 and shop_profit > 0:
+          if self.world.random.random() < CHANCE_MEDIUM:
+            shop_profit = 0
+          else:
+            shop_revenue = 0
+
+        # Both given? i only want 1
+        if (shop_revenue > 0 and shop_profit > 0) and customers > 0:
+          # Coin flip to decide which one to keep
+          if self.world.random.random() < CHANCE_MEDIUM:
+            customers = 0
+          else:
+            shop_revenue = 0
+            shop_profit = 0
+
+        if item_helper.is_shop_stat_exempt() and shop_revenue > RULE_SHOP_STAT_EXEMPT_REVENUE_MAX:
+          shop_revenue = round(
+            self.world.random.uniform(RULE_SHOP_STAT_EXEMPT_REVENUE_MIN, RULE_SHOP_STAT_EXEMPT_REVENUE_MAX),
+            ROUND_DIGITS)
+
+        check["item"] = Statistics(
+          item_helper,
+          self.world.random.randint(min, max),
+          revenue=shop_revenue,
+          profit=shop_profit,
+          customers=customers,
+          vouchers=shop_vouchers
+        ).to_dict()
+
+      # Ride -> max: 3
+      # Ride Category Type -> max: 6
+      # Coaster -> max: 2
+      # Ride Coaster Category Type -> max: 2
+      elif item_helper.is_ride() or item_helper.is_ride_category():
+        max = 3
+        ride_revenue = 0
+        ride_profit = 0
+        ride_photos = 0
+        ride_vouchers = 0
+
+        if item_helper.is_ride_type():
+          max = 6
+
+        elif item_helper.is_coaster() or item_helper.is_coaster_type():
+          max = 2
+
+          if self.world.random.random() < CHANCE_VERY_HIGH:
+            ride_photos = round(self.world.random.uniform(
+              0,
+              self.world.options.challenge_maximum_photos.value
+            ), ROUND_DIGITS_NONE)
+
+        if self.world.random.random() < CHANCE_MEDIUM:
+          ride_revenue = round(self.world.random.uniform(
+            0,
+            self.world.options.challenge_maximum_ride_revenue.value
+          ), ROUND_DIGITS)
+
+        if self.world.random.random() < CHANCE_MEDIUM:
+          ride_profit = round(self.world.random.uniform(
+            0,
+            self.world.options.challenge_maximum_ride_profit.value
+          ), ROUND_DIGITS)
+
+        if self._is_difficulty(Difficulty.extreme) and self.world.random.random() < CHANCE_MEDIUM:
+          ride_vouchers = round(self.world.random.uniform(
+            0,
+            self.world.options.challenge_maximum_ride_vouchers.value
+          ), ROUND_DIGITS_NONE)
+
+        if item_helper.is_ride_stat_exempt() and ride_revenue > RULE_RIDE_STAT_EXEMPT_REVENUE_MAX:
+          ride_revenue = round(
+            self.world.random.uniform(RULE_RIDE_STAT_EXEMPT_REVENUE_MIN, RULE_RIDE_STAT_EXEMPT_REVENUE_MAX),
+            ROUND_DIGITS)
+
+        if self.world.random.random() < CHANCE_MEDIUM:
+          customers = round(self.world.random.uniform(
+            0,
+            self.world.options.challenge_maximum_customers.value
+          ), ROUND_DIGITS_NONE)
+
+        if ride_revenue > 0 and ride_profit > 0:
+          if self.world.random.random() < CHANCE_MEDIUM:
+            ride_profit = 0
+          else:
+            ride_revenue = 0
+
+        # Both given? i only want 1
+        if (ride_revenue > 0 or ride_profit > 0) and customers > 0:
+          # Coin flip to decide which one to keep
+          if self.world.random.random() < CHANCE_MEDIUM:
+            customers = 0
+          else:
+            ride_profit = 0
+            ride_revenue = 0
+
+        check["item"] = Statistics(
+          item_helper,
+          self.world.random.randint(min, max),
+          revenue=ride_revenue,
+          profit=ride_profit,
+          customers=customers,
+          vouchers=ride_vouchers,
+          photos=ride_photos
+        ).try_add_deco_rating(item_helper, self.world).to_dict()
 
     # --- Tier 3: -> 35% ---
-    elif progress <= TIER_3_PROGRESS:
+    elif progress <= TIER_4_PROGRESS:
       # Shop -> max: 4
-      # Shop Category -> max: 12
-      if itemHelper.is_shop() or itemHelper.is_shop_category():
+      # Shop Category Type -> max: 12
+      if item_helper.is_shop() or item_helper.is_shop_category():
         max = 4
 
-        if itemHelper.is_shop_category():
+        if item_helper.is_shop_type():
           max = 12
 
         check["item"] = Statistics.random_roll(
-          itemHelper,
+          item_helper,
+          self.world.random.randint(min, max),
+          self.world,
+          prerequisites
+        ).to_dict()
+
+      # Ride -> max: 3
+      # Ride Category Type -> max: 7
+      elif item_helper.is_ride() or item_helper.is_ride_category():
+        max = 3
+
+        if item_helper.is_ride_type():
+          max = 7
+
+        check["item"] = Statistics.random_roll(
+          item_helper,
+          self.world.random.randint(min, max),
+          self.world,
+          prerequisites
+        ).try_add_deco_rating(item_helper, self.world).to_dict()
+
+    # --- Tier 4: -> 60% ---
+    elif progress <= TIER_5_PROGRESS:
+      # Shop -> max: 6
+      # Shop Category -> max: 24
+      if item_helper.is_shop() or item_helper.is_shop_category():
+        max = 6
+    
+        if item_helper.is_shop_type():
+          max = 24
+
+        check["item"] = Statistics.random_roll(
+          item_helper,
           self.world.random.randint(min, max),
           self.world,
           prerequisites
@@ -329,96 +560,57 @@ class Rules:
 
       # Ride -> max: 4
       # Coaster -> max: 3
-      # Ride Category -> max: 8
-      elif itemHelper.is_ride() or itemHelper.is_ride_category():
+      # Ride Category Type -> max: 10
+      elif item_helper.is_ride() or item_helper.is_ride_category():
         max = 4
-
-        if itemHelper.is_ride_category():
-          max = 8
         
-        elif itemHelper.is_coaster():
+        if item_helper.is_coaster():
           max = 3
 
-        check["item"] = Statistics.random_roll(
-          itemHelper,
-          self.world.random.randint(min, max),
-          self.world,
-          prerequisites
-        ).try_add_deco_rating(itemHelper, self.world).to_dict()
-
-    # --- Tier 4: -> 60% ---
-    elif progress <= TIER_4_PROGRESS:
-      # Shop -> max: 6
-      # Shop Category -> max: 24
-      if itemHelper.is_shop() or itemHelper.is_shop_category():
-        max = 6
-    
-        if itemHelper.is_shop_category():
-          max = 24
-
-        check["item"] = Statistics.random_roll(
-          itemHelper,
-          self.world.random.randint(min, max),
-          self.world,
-          prerequisites
-        ).to_dict()
-
-      # Ride -> max: 5
-      # Coaster -> max: 3
-      # Ride Category -> max: 10
-      elif itemHelper.is_ride() or itemHelper.is_ride_category():
-        max = 5
-        
-        if itemHelper.is_coaster():
-          max = 3
-
-        elif itemHelper.is_ride_category():
+        elif item_helper.is_ride_type():
           max = 10
 
         check["item"] = Statistics.random_roll(
-          itemHelper,
+          item_helper,
           self.world.random.randint(min, max),
           self.world,
           prerequisites
-        ).try_add_deco_rating(itemHelper, self.world).to_dict()
+        ).try_add_deco_rating(item_helper, self.world).to_dict()
 
     # --- Tier 5: +60% ---
     else:
       # Shops -> max: 6
       # Shop Category -> max: 30
-      if itemHelper.is_shop() or itemHelper.is_shop_category():
+      if item_helper.is_shop() or item_helper.is_shop_category():
         max = 6
 
-        if itemHelper.is_shop_category():
+        if item_helper.is_shop_type():
           max = 30
 
         check["item"] = Statistics.random_roll(
-          itemHelper,
+          item_helper,
           self.world.random.randint(min, max),
           self.world,
           prerequisites
         ).to_dict()
 
-      # Ride -> max: 5
+      # Ride -> max: 4
       # Coaster Ride -> max: 4
-      # Ride Category -> max: 12
-      elif itemHelper.is_ride() or itemHelper.is_ride_category():
-        max = 5
+      # Ride Category -> max: 15
+      elif item_helper.is_ride() or item_helper.is_ride_category():
+        max = 4
 
-        if itemHelper.is_coaster():
-          max = 4
-    
-        elif itemHelper.is_ride_category():
-          max = 12
+        if item_helper.is_ride_type():
+          max = 15
 
         check["item"] = Statistics.random_roll(
-          itemHelper,
+          item_helper,
           self.world.random.randint(min, max),
           self.world,
           prerequisites
-        ).try_add_deco_rating(itemHelper, self.world).to_dict()
+        ).try_add_deco_rating(item_helper, self.world).to_dict()
 
-    assert check["location_id"] >= 0, f"Missing location_id for item: \"{itemHelper.item}\""
-    assert len(check["item"]) > 0, f"No item set for a check. Item: \"{itemHelper.item}\""
+    assert check["location_id"] >= 0, f"Missing location_id for item: \"{item_helper.item}\""
+    assert len(check["item"]) > 0, f"No item set for a check. Item: \"{item_helper.item}\""
 
     return check

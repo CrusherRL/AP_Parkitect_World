@@ -2,7 +2,7 @@ from ...data.items import (
     ACCELERATOR_COASTER,
     BALLOON_SHOP,
     BURGER_STALL,
-    CAMPAIGN_0,
+    BASIC,
     CANDY_STALL,
     CAROUSEL,
     CASH_MACHINE,
@@ -211,4 +211,4 @@ starters = [
 
 park = calms + thrills + coasters + transports + waters + shops + MODS[TYPE_ALL] + UTILITY_BUILDINGS[TYPE_ALL] + decos + \
        STATISTICS[
-           CAMPAIGN_0]
+           BASIC]

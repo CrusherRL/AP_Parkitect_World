@@ -80,7 +80,9 @@ from ...data.items import (
     VERTICAL_DROP_COASTER,
     WAVE_SWINGER,
     WILD_MOUSE,
-    WING_COASTER, MODS,
+    WING_COASTER,
+    MODS,
+    EXTENDED,
 )
 
 calms = [
@@ -183,4 +185,4 @@ starters = [
 
 park = calms + thrills + coasters + transports + waters + shops + MODS[TYPE_ALL] + UTILITY_BUILDINGS[TYPE_ALL] + decos + \
        STATISTICS[
-           TYPE_ALL]
+           EXTENDED]

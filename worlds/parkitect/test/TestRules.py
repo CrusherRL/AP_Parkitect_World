@@ -147,7 +147,7 @@ class TestRules(unittest.TestCase):
         ["name", "amount", "revenue", "customers", "type"]
       )
 
-    if itemHelper.is_shop_category() or itemHelper.is_ride_category() or itemHelper.is_coaster_category():
+    if itemHelper.is_shop_category() or itemHelper.is_ride_category() or itemHelper.is_coaster_type():
       self.assert_has_keys(
         check_item,
         ["amount", "type"]
@@ -180,10 +180,10 @@ class TestRules(unittest.TestCase):
       self.assertEqual(check_item.get("revenue", 0), 0)
 
   def test_challenge_park_guests_ranges(self):
-    self.assertEqual(CHALLENGE_PARK_GUESTS_RANGES[0], [100, 300])
-    self.assertEqual(CHALLENGE_PARK_GUESTS_RANGES[1], [200, 500])
-    self.assertEqual(CHALLENGE_PARK_GUESTS_RANGES[2], [400, 800])
-    self.assertEqual(CHALLENGE_PARK_GUESTS_RANGES[3], [600, 1000])
+    self.assertEqual(CHALLENGE_PARK_GUESTS_RANGES[0], [100, 500])
+    self.assertEqual(CHALLENGE_PARK_GUESTS_RANGES[1], [200, 1000])
+    self.assertEqual(CHALLENGE_PARK_GUESTS_RANGES[2], [400, 1150])
+    self.assertEqual(CHALLENGE_PARK_GUESTS_RANGES[3], [600, 1300])
 
   def test_determine_park_guests_max_scales_with_progress(self):
     self.parkitectWorld.options.goal_guests = FakeOption(0)

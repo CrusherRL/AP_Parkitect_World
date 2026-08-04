@@ -3,7 +3,7 @@ from ...data.items import (
     BALLOON_SHOP,
     BUBBLE_TEA_STALL,
     BUMPER_CARS,
-    CAMPAIGN_0,
+    BASIC,
     CASH_MACHINE,
     CINEMA_4D,
     CIRCUS_SHOW,
@@ -170,4 +170,4 @@ starters = [
 
 park = calms + thrills + coasters + transports + waters + shops + MODS[TYPE_ALL] + UTILITY_BUILDINGS[TYPE_ALL] + decos + \
        STATISTICS[
-           CAMPAIGN_0]
+           BASIC]

@@ -12,9 +12,21 @@ from .scenarios import lakeside_gardens, dusty_ridge_ranch, the_broken_atoll, ma
 DEBUG = False
 FAIL = False
 
-AP_WORLD_VERSION = "v1.5.0"
+AP_WORLD_VERSION = "v1.6.0"
 THEME = "stone"
 BASE_ID = 3000000
+
+CHANCE_VERY_LOW = .33
+CHANCE_LOW = .4
+CHANCE_MEDIUM = .5
+CHANCE_HIGH = .6
+CHANCE_VERY_HIGH = .66
+CHANCE_EXTREME = .85
+
+ROUND_DIGITS_NONE = 0
+ROUND_DIGITS = 2
+
+EARLY_ITEM_RANGE = 30
 
 Scenario_Items = {
     # Custom Campaign
@@ -124,8 +136,9 @@ RULE_SHOP_STAT_EXEMPT_REVENUE_MIN = 200
 RULE_SHOP_STAT_EXEMPT_REVENUE_MAX = 500
 
 TIER_2_PROGRESS = 0.10
-TIER_3_PROGRESS = 0.35
-TIER_4_PROGRESS = 0.60
+TIER_3_PROGRESS = 0.18
+TIER_4_PROGRESS = 0.35
+TIER_5_PROGRESS = 0.60
 
 ATTRACTION_DECO_RATING = {
     0: "Bad",
@@ -181,10 +194,10 @@ CHALLENGE_PAY_MONEY_RANGES = {
 }
 
 CHALLENGE_PARK_GUESTS_RANGES = {
-    0: [100, 300],  # Easy Difficulty
-    1: [200, 500],  # Medium Difficulty
-    2: [400, 800],  # Hard Difficulty
-    3: [600, 1000],  # Extreme Difficulty
+    0: [100, 500],  # Easy Difficulty
+    1: [200, 1000],  # Medium Difficulty
+    2: [400, 1150],  # Hard Difficulty
+    3: [600, 1300],  # Extreme Difficulty
 }
 
 CHALLENGE_EMPLOYEE_RANGES = {

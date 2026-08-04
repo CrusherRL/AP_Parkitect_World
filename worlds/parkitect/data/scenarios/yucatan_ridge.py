@@ -5,7 +5,6 @@ from ...data.items import (
     BUMPER_BOATS,
     BUMPER_CARS,
     CALM_RIVER_RIDE,
-    CAMPAIGN_0,
     CAR_RIDE,
     CAROUSEL,
     CHINESE_FOOD_STALL,
@@ -90,7 +89,9 @@ from ...data.items import (
     VENDING_MACHINE,
     WAVE_SWINGER,
     WING_COASTER,
-    WIPE_OUT, MODS,
+    WIPE_OUT,
+    MODS,
+    EXTENDED,
 )
 
 calms = [
@@ -208,4 +209,4 @@ starters = [
 
 park = calms + thrills + coasters + transports + waters + shops + MODS[TYPE_ALL] + UTILITY_BUILDINGS[TYPE_ALL] + decos + \
        STATISTICS[
-           CAMPAIGN_0]
+           EXTENDED]
