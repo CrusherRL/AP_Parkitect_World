@@ -5,11 +5,11 @@ from .src.Options import ParkitectOptions, parkitect_option_groups
 from .src.Items import get_items
 from .src.Regions import Regions
 from .src.LoggerHelper import LoggerHelper
-from .src.Item import ParkitectItem
+from .src.Item import ParkitectItem, ItemHelper
 from .src.Rules import Rules
 
 from .data.items import *
-from .data.constants import AP_WORLD_VERSION, ITEM_NAME_TO_ID, LOCATION_NAME_TO_ID, THEME, FAIL, TASTE_OF_ADVENTURE_SCENARIOS
+from .data.constants import AP_WORLD_VERSION, ITEM_NAME_TO_ID, LOCATION_NAME_TO_ID, THEME, FAIL, TASTE_OF_ADVENTURE_SCENARIOS, EARLY_ITEM_RANGE
 
 class ParkitectWebWorld(WebWorld):
   theme = THEME
@@ -40,13 +40,16 @@ class ParkitectWorld(World):
   location_name_to_id = LOCATION_NAME_TO_ID
   item_name_to_id = ITEM_NAME_TO_ID
   item_name_groups = {
+    TYPE_RIDES: RIDES[TYPE_ALL],
     TYPE_CALM_RIDES: RIDES[TYPE_CALM_RIDES],
     TYPE_THRILL_RIDES: RIDES[TYPE_THRILL_RIDES],
     TYPE_COASTER_RIDES: RIDES[TYPE_COASTER_RIDES],
     TYPE_WATER_RIDES: RIDES[TYPE_WATER_RIDES],
     TYPE_TRANSPORT_RIDES: RIDES[TYPE_TRANSPORT_RIDES],
-    TYPE_RIDES: RIDES[TYPE_ALL],
     TYPE_SHOPS: SHOPS[TYPE_ALL],
+    TYPE_SHOP_DRINKS: SHOPS[TYPE_SHOP_DRINKS],
+    TYPE_SHOP_FOOD: SHOPS[TYPE_SHOP_FOOD],
+    TYPE_SHOP_FACILITIES: SHOPS[TYPE_SHOP_FACILITIES],
     TYPE_DECORATIONS: DECORATION_THEMES[TYPE_ALL],
   }
 
@@ -60,9 +63,93 @@ class ParkitectWorld(World):
     if self.options.scenario.value in TASTE_OF_ADVENTURE_SCENARIOS:
       assert self.options.dlc1.value, f"Parkitect scenario \"{self.options.scenario.value}\" requires DLC \"{self.options.dlc1.display_name}\" to be set to yes."
 
+  def reshuffle_items(self, items: list[str]) -> list[str]:
+    early_items = self.get_early_items(items)
+    early_items_verifier = early_items.copy()
+
+    if len(early_items) == 0:
+      return items
+
+    # Remove all early items first
+    for item in early_items:
+      if item in items:
+        items.remove(item)
+
+    # Pick positions in the first 30 slots
+    positions = self.random.sample(range(EARLY_ITEM_RANGE), len(early_items))
+
+    # Insert them into their final positions
+    for index, item in sorted(zip(positions, early_items)):
+      items.insert(index, item)
+
+    self.verify_early_items(early_items_verifier)
+    return items
+
+  def verify_early_items(self, items):
+    for item in items:
+        if items.index(item) >= EARLY_ITEM_RANGE:
+          raise Exception(f"{item} was not early: {items.index(item)}")
+
+  def get_early_items(self, items: list[str]) -> list[str]:
+    item_helper = ItemHelper(self.starter)
+    early_items = []
+
+    if self.options.early_toilets.value and item_helper.item != TOILETS:
+      early_items.append(TOILETS)
+
+    if self.options.early_cash_machine.value and item_helper.item != CASH_MACHINE:
+      early_items.append(CASH_MACHINE)
+
+    if self.options.early_first_aid_room.value and item_helper.item != FIRST_AID_ROOM:
+      early_items.append(FIRST_AID_ROOM)
+
+    if self.options.utility_buildings.value and self.options.early_staff_room.value and item_helper.item != UTILITY_BUILDING_STAFF_ROOM:
+      early_items.append(UTILITY_BUILDING_STAFF_ROOM)
+
+    if self.options.utility_buildings.value and self.options.early_training_room.value and item_helper.item != UTILITY_BUILDING_TRAINING_ROOM:
+      early_items.append(UTILITY_BUILDING_TRAINING_ROOM)
+
+    if self.options.early_edible_shop.value and not (
+      item_helper.is_food_shop() or item_helper.is_drink_shop()
+    ):
+      while True:
+        candidate = ItemHelper(
+          self.random.choice(items)
+        )
+        if candidate.is_food_shop() or candidate.is_drink_shop():
+          early_items.append(candidate.item)
+          break
+
+    if self.options.early_ride.value and not item_helper.is_ride():
+      while True:
+        candidate = ItemHelper(
+          self.random.choice(items)
+        )
+        if candidate.is_ride():
+          early_items.append(candidate.item)
+          break
+
+    if self.options.early_decoration and self.options.decorations and not item_helper.is_decoration_themes():
+      while True:
+        candidate = ItemHelper(
+          self.random.choice(items)
+        )
+        if candidate.is_decoration_themes():
+          early_items.append(candidate.item)
+          break
+
+    return early_items
+
   def generate_early(self) -> None:
     self.validate_scenario_dlc()
-    self.item_table, self.starter = get_items(self)
+    item_table, self.starter = get_items(self)
+    item_table_length = len(item_table)
+    self.random.shuffle(item_table)
+    self.item_table = self.reshuffle_items(item_table)
+
+    assert item_table_length == len(self.item_table), (
+      f"Custom shuffling mistake! {item_table_length} != {len(self.item_table)}"
+    )
     LoggerHelper.log(len(self.item_table), "Total Items")
 
   def create_regions(self) -> None:
@@ -107,7 +194,6 @@ class ParkitectWorld(World):
     self.multiworld.completion_condition[self.player] = lambda state: state.has("Victory", self.player)
 
   def set_rules(self) -> None:
-    self.random.shuffle(self.item_table)
     Rules(self).set()
     LoggerHelper.log("Set Rules")
 
@@ -173,7 +259,8 @@ class ParkitectWorld(World):
       "utility_buildings",
       "decorations",
       "statistics",
-      "trap_link"
+      "trap_link",
+      "release_mode",
     )
     
     slot_data["seed"] = seed

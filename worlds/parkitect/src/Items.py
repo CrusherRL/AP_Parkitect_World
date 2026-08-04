@@ -6,7 +6,7 @@ from ..src.Item import ItemHelper
 
 from .LoggerHelper import LoggerHelper
 
-def filter_dlc_items(items, options):
+def filter_dlc_items(items: list[str], options) -> list[str]:
   """Add all DLC items"""
   exclude_items = set()
 
@@ -32,7 +32,7 @@ def filter_dlc_items(items, options):
 
   return items
 
-def filter_mod_items(items, options):
+def filter_mod_items(items: list[str], options) -> list[str]:
   """Filter Parkitect Mod items based on which mod toggles are enabled."""
   filtered_items = items[:]
 
@@ -83,7 +83,7 @@ def filter_mod_items(items, options):
 
   return filtered_items
 
-def add_filter_items(items, options):
+def add_filter_items(items: list[str], options) -> list[str]:
   for each in range(options.trap_player_money.value):
     items.append(PLAYER_MONEY_TRAP)
 
@@ -177,13 +177,13 @@ def add_filter_items(items, options):
 
   return items
 
-def filter_from_options(scenario_items, options):
+def filter_from_options(scenario_items, options) -> list[str]:
   """Filter items based on which DLCs are active."""
 
   items = filter_dlc_items(scenario_items, options)
   return filter_mod_items(items, options)
 
-def find_starter(items, world):
+def find_starter(items: list[str], world):
   available_items = items[:]
 
   if world.options.guaranteed_unlocked_starter.value and world.options.scenario.value in Scenario_Items_Starters:
@@ -200,11 +200,11 @@ def find_starter(items, world):
 def get_items(world):
   assert world.options.scenario.value in Scenario_Items, "Scenario not found"
   scenario_items = copy.deepcopy(Scenario_Items[world.options.scenario.value])
-  items = filter_from_options(scenario_items, world.options)
+  items: list[str] = filter_from_options(scenario_items, world.options)
 
   starter = find_starter(items, world)
   items.remove(starter)
-  items = add_filter_items(items, world.options)
+  items: list[str] = add_filter_items(items, world.options)
 
   assert len(items) > 0, "No Items found"
   assert starter not in items, "Starter is listed as usual item. That should never be the case!"

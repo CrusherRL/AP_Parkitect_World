@@ -93,7 +93,9 @@ from ...data.items import (
     UMBRELLA_STALL,
     UTILITY_BUILDINGS,
     VENDING_MACHINE,
-    WILD_MOUSE, MODS,
+    WILD_MOUSE,
+    MODS,
+    EXTENDED,
 )
 
 calms = [
@@ -214,4 +216,4 @@ starters = [
 
 park = calms + thrills + coasters + transports + waters + shops + MODS[TYPE_ALL] + UTILITY_BUILDINGS[TYPE_ALL] + decos + \
        STATISTICS[
-           TYPE_ALL]
+           EXTENDED]

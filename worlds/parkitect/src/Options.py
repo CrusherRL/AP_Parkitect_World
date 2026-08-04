@@ -205,6 +205,7 @@ class UtilityBuildings(Toggle):
     """
     Adding all 4 Utility Buildings to the pool.
     """
+    display_name = "Utility Buildings"
     default = False
 
 class Decorations(Toggle):
@@ -212,13 +213,89 @@ class Decorations(Toggle):
     Adding all 11 Decoration Themes to the pool.
     (9 Items if not having DLC \"Dinos and Dynasties DLC\")
     """
+    display_name = "Decorations"
     default = False
 
 class Statistics(Toggle):
     """
-    Adding all 32 Statistics to the pool.
+    Adding all 31 Statistics to the pool, if possible.
     """
+    display_name = "Statistics"
     default = False
+
+# QoL
+class EarlyToilets(Choice):
+    """
+    First 30 items includes the Toilets.
+    """
+    display_name = "Early Toilets"
+    option_no = 0
+    option_yes = 1
+    default = 1
+
+class EarlyCashMachine(Choice):
+    """
+    First 30 items includes the Cash Machine.
+    """
+    display_name = "Early Cash Machine"
+    option_no = 0
+    option_yes = 1
+    default = 1
+
+class EarlyFirstAidRoom(Choice):
+    """
+    First 30 items includes the First Aid Room.
+    """
+    display_name = "Early First Aid Room"
+    option_no = 0
+    option_yes = 1
+    default = 1
+
+class EarlyEdibleShop(Choice):
+    """
+    First 30 items includes a Food or Drink Stall.
+    """
+    display_name = "Early Food or Drink Stall"
+    option_no = 0
+    option_yes = 1
+    default = 1
+
+class EarlyRide(Choice):
+    """
+    First 30 items includes a random Ride.
+    display_name = "Early Ride"
+    """
+    display_name = "Early Ride"
+    option_no = 0
+    option_yes = 1
+    default = 1
+
+class EarlyDecoration(Choice):
+    """
+    First 30 items includes a Decoration Theme.
+    """
+    display_name = "Early Decoration Theme"
+    option_no = 0
+    option_yes = 1
+    default = 1
+
+class EarlyStaffRoom(Choice):
+    """
+    First 30 items includes a Staff Room.
+    """
+    display_name = "Early Staff Room"
+    option_no = 0
+    option_yes = 1
+    default = 1
+
+class EarlyTrainingRoom(Choice):
+    """
+    First 30 items includes the Training Room.
+    """
+    display_name = "Early Training Room"
+    option_no = 0
+    option_yes = 1
+    default = 1
 
 # Goals
 class GoalGuests(Range): # GuestsInParkGoal
@@ -308,7 +385,7 @@ class ChallengeMaximumExcitement(Range):
     If a challenge determines you need a rollercoaster with a maximum excitement, this value will be the lowest it can ask for.
     If this value is higher than the maximum, the generator will assume it is a mistake and set it to 0.
     """
-    display_name = "Challenge: Maximum Ride Excitement"
+    display_name = "Challenge: Max Excitement"
     range_start = 0
     range_end = 80
     default = 0
@@ -318,7 +395,7 @@ class ChallengeMaximumIntensity(Range):
     If a challenge determines you need a rollercoaster with a maximum intensity, this value will be the lowest it can ask for.
     If this value is higher than the maximum, the generator will assume it is a mistake and set it to 0.
     """
-    display_name = "Challenge: Maximum Ride Intensity"
+    display_name = "Challenge: Max Intensity"
     range_start = 0
     range_end = 80
     default = 0
@@ -328,7 +405,7 @@ class ChallengeMaximumNausea(Range):
     If a challenge determines you need a rollercoaster with a maximum nausea, this value will be the lowest it can ask for.
     If this value is higher than the maximum, the generator will assume it is a mistake and set it to 0.
     """
-    display_name = "Challenge: Maximum Ride Nausea"
+    display_name = "Challenge: Max Nausea"
     range_start = 0
     range_end = 70
     default = 0
@@ -338,27 +415,37 @@ class ChallengeMaximumSatisfaction(Range):
     If a challenge determines you need a rollercoaster with a maximum satisfaction, this value will be the lowest it can ask for.
     If this value is higher than the maximum, the generator will assume it is a mistake and set it to 0.
     """
-    display_name = "Challenge: Maximum Ride Satisfaction"
+    display_name = "Challenge: Max Satisfaction"
     range_start = 0
     range_end = 80
     default = 0
 
-class ChallengeCustomers(Range):
+class ChallengeMaximumCustomers(Range):
     """
     If a challenge determines you need a ride or shop with a maximum amount of customers, this value will be the lowest it can ask for.
     If this value is higher than the maximum, the generator will assume it is a mistake and set it to 0.
     """
-    display_name = "Challenge: Maximum Customers"
+    display_name = "Challenge: Max Customers"
     range_start = 0
     range_end = 1000
     default = 0
 
-class ChallengeMaximumRideRevenue(Range):
+class ChallengeMaximumCoasterRevenue(Range):
     """
-    If a challenge determines you need a rollercoaster with a total revenue, this value will be the lowest it can ask for.
+    If a challenge determines you need a ride with a total revenue, this value will be the lowest it can ask for.
     If this value is higher than the maximum, the generator will assume it is a mistake and set it to 0.
     """
-    display_name = "Challenge: Total Ride Revenue"
+    display_name = "Challenge: Max Coaster Revenue"
+    range_start = 0
+    range_end = 10000
+    default = 0
+
+class ChallengeMaximumRideRevenue(Range):
+    """
+    If a challenge determines you need a ride with a total revenue, this value will be the lowest it can ask for.
+    If this value is higher than the maximum, the generator will assume it is a mistake and set it to 0.
+    """
+    display_name = "Challenge: Max Ride Revenue"
     range_start = 0
     range_end = 5000
     default = 0
@@ -368,7 +455,27 @@ class ChallengeMaximumShopRevenue(Range):
     If a challenge determines you need a shop with a total revenue, this value will be the lowest it can ask for.
     If this value is higher than the maximum, the generator will assume it is a mistake and set it to 0.
     """
-    display_name = "Challenge: Total Shop Revenue"
+    display_name = "Challenge: Max Shop Revenue"
+    range_start = 0
+    range_end = 5000
+    default = 0
+
+class ChallengeMaximumRideProfit(Range):
+    """
+    If a challenge determines you need a ride with a total profit, this value will be the lowest it can ask for.
+    If this value is higher than the maximum, the generator will assume it is a mistake and set it to 0.
+    """
+    display_name = "Challenge: Max Ride Profit"
+    range_start = 0
+    range_end = 5000
+    default = 0
+
+class ChallengeMaximumShopProfit(Range):
+    """
+    If a challenge determines you need a shop with a total revenue, this value will be the lowest it can ask for.
+    If this value is higher than the maximum, the generator will assume it is a mistake and set it to 0.
+    """
+    display_name = "Challenge: Max Shop Profit"
     range_start = 0
     range_end = 2500
     default = 0
@@ -376,14 +483,45 @@ class ChallengeMaximumShopRevenue(Range):
 class ChallengeDecorationRating(Toggle):
     """
     Determines if a challenge need an Attraction with a specific Decoration rating.
-    Diffictuly depending on the value.
+    Difficulty depending on the value.
     """
+    display_name = "Challenge: Deco Rating"
+
+class ChallengeMaximumPhotos(Range):
+    """
+    If a challenge determines you need a Rollercoaster with sold photos, this value will be the lowest it can ask for.
+    If this value is higher than the maximum, the generator will assume it is a mistake and set it to 0.
+    """
+    display_name = "Challenge: Max Photos"
+    range_start = 0
+    range_end = 750
+    default = 0
+
+class ChallengeMaximumRideVouchers(Range):
+    """
+    If a challenge determines you need a ride with redeemed vouchers, this value will be the lowest it can ask for.
+    If this value is higher than the maximum, the generator will assume it is a mistake and set it to 0.
+    """
+    display_name = "Challenge: Max Ride Vouchers"
+    range_start = 0
+    range_end = 250
+    default = 0
+
+class ChallengeMaximumShopVouchers(Range):
+    """
+    If a challenge determines you need a shop with redeemed vouchers, this value will be the lowest it can ask for.
+    If this value is higher than the maximum, the generator will assume it is a mistake and set it to 0.
+    """
+    display_name = "Challenge: Max Shop Vouchers"
+    range_start = 0
+    range_end = 250
+    default = 0
 
 class ChallengeParkGuests(Range):
-    f"""
+    """
     Adding Challenge with \"Have X amount of Guests in your Park\""
     """
-    display_name = "Challenge: X Park Guest"
+    display_name = "Challenge: Park Guests"
     range_start = 0
     range_end = 25
     default = 15
@@ -393,7 +531,7 @@ class ChallengeEmployees(Range):
     Adding Challenge with \"Have X amount of Employees\""
     Difficulty depends on the Experience Level an Employee must have
     """
-    display_name = "Challenge: X Employees"
+    display_name = "Challenge: Employee"
     range_start = 0
     range_end = 25
     default = 10
@@ -403,7 +541,7 @@ class ChallengePayMoney(Range):
     Adding Challenge with \"Pay X amount of Money\""
     Depending on the Difficulty and if \"goal_money\" is set
     """
-    display_name = "Challenge: Pay X Money"
+    display_name = "Challenge: Pay Money"
     range_start = 0
     range_end = 30
     default = 20
@@ -528,7 +666,7 @@ class TrapGuestsSpawn(Range):
 
 class TrapGuestsKill(Range):
     """
-    When found, certain Guests will disappears in your Scenario! Adding traps will increase the total number of items in the world.
+    When found, certain Guests will disappear in your Scenario! Adding traps will increase the total number of items in the world.
     """
     display_name = "Guest Kill Trap"
     range_start = 0
@@ -612,7 +750,7 @@ class TrapGuestsTiredness(Range):
 class TrapGuestsVandal(Range):
     """
     When found, certain Guests become a Vandal! Adding traps will increase the total number of items in the world.
-    The difficulty decides how many Guests vandalising your Park!
+    The difficulty decides how many Guests vandalizing your Park!
     """
     display_name = "Guest Vandal Trap"
     range_start = 0
@@ -633,6 +771,11 @@ class TrapResearchTrap(Range):
 class EnableTrapLink(Toggle):
     """
     When a player found a Trap, it will spread to everyone that has TrapLink enabled!
+
+    You're able to change TrapLink with commands (case-insensitive):
+    - !!toggleTrapLink = Toggle the TrapLink
+    - !!joinTrapLink = Join the TrapLink
+    - !!leaveTrapLink = Leave the TrapLink
     """
     display_name = "Trap Link"
     default = False
@@ -646,6 +789,22 @@ class SelectedProgressiveSpeedups(Toggle):
     display_name = "Progressive Speedups"
     default = False
 
+# Release mode
+class ReleaseMode(Toggle):
+    """
+    Checks/Challenges will *not* be removed when Park Goal completed.
+    Bigger Async profits from this option when it is 'false'.
+
+    Note: When "Release Mode" is enabled, all Challenges/Checks are removed.
+
+    You're able to change it with commands (case-insensitive):
+    - !!toggleReleaseMode = Toggle the Release Mode
+    - !!disableReleaseMode = Disable Release Mode
+    - !!enableReleaseMode = Enable Release Mode
+    """
+    default = True
+    display_name = "Release Mode"
+
 # Parkitect Mods
 class ParkitectModsInfo(Toggle):
     """
@@ -654,84 +813,114 @@ class ParkitectModsInfo(Toggle):
 
     You can ignore this setting. It is always on.
     """
-    display_name = "ℹ Parkitect Mods"
     default = True
+    display_name = "Parkitect Mods"
 
 class DragonShop(Toggle):
     """Dragon Shop (Recommended)"""
+    display_name = "Dragon Shop"
 
 class TacoShop(Toggle):
     """Taco Shop (Recommended)"""
+    display_name = "Taco Shop"
 
 class PancakeShop(Toggle):
     """Pancake Shop (Recommended)"""
+    display_name = "Pancake Shop"
 
 class RevolutionAttraction(Toggle):
     """Revolution"""
+    display_name = "Revolution"
 
 class MonsterAttraction(Toggle):
     """Monster"""
+    display_name = "Monster"
 
 class FishBarrelAttraction(Toggle):
     """Fish In A Barrel"""
+    display_name = "Fish In A Barrel"
 
 class InverterAndSomersaultAttraction(Toggle):
     """Inverter & Somersault"""
+    display_name = "Inverter & Somersault"
 
 class CircusShowAttraction(Toggle):
     """Circus Show (Recommended)"""
+    display_name = "Circus Show"
 
 class JumpAttraction(Toggle):
     """Jump²"""
+    display_name = "Jump"
 
 class RockinTugAttraction(Toggle):
     """Rockin' Tug (Recommended)"""
+    display_name = "Rockin' Tug"
 
 class HopperAttraction(Toggle):
     """Hopper (Recommended)"""
+    display_name = "Hopper"
 
 class DemonDropAttraction(Toggle):
     """Demon Drop"""
+    display_name = "Demon Drop"
 
 class RotoShakeAttraction(Toggle):
     """RotoShake"""
+    display_name = "RotoShake"
 
 class HexentanzAttraction(Toggle):
     """Hexentanz"""
+    display_name = "Hexentanz"
 
 class PowerSwingAndMegaSwingAttraction(Toggle):
     """Power Swing & Mega Swing"""
+    display_name = "Power and Mega Swing"
 
 class KrakenAttackAttraction(Toggle):
     """Kraken Attack (Recommended)"""
+    display_name = "Kraken Attack"
 
 class CorkscrewCoaster(Toggle):
     """Corkscrew Coaster (Recommended)"""
+    display_name = "Corkscrew Coaster"
 
 class InvertedLaunchCoaster(Toggle):
     """Inverted Launch Coaster"""
+    display_name = "Inverted Launch Coaster"
 
 class QuadrupleRailCoaster(Toggle):
     """Quadruple Rail Coaster (Recommended)"""
+    display_name = "Quadruple Rail Coaster"
 
 class RetroSteelCoaster(Toggle):
     """Retro Steel Coaster (Recommended)"""
+    display_name = "Retro Steel Coaster"
 
 parkitect_option_groups = [
     OptionGroup("Scenario Options", [
         SelectedScenario,
-    GuaranteedUnlockedStarter,
+        GuaranteedUnlockedStarter,
         SelectedDifficulty
     ]),
     OptionGroup("DLC Options", [
         SelectedDLC1,
         SelectedDLC2,
-        SelectedDLC3
+        SelectedDLC3,
     ]),
     OptionGroup("Extra items", [
         UtilityBuildings,
         Decorations,
         Statistics
+    ]),
+    OptionGroup("QoL", [
+        EarlyToilets,
+        EarlyCashMachine,
+        EarlyFirstAidRoom,
+        EarlyEdibleShop,
+        EarlyRide,
+        EarlyDecoration,
+        EarlyStaffRoom,
+        EarlyTrainingRoom,
     ]),
     OptionGroup("Goal Options", [
         GoalGuests,
@@ -745,14 +934,20 @@ parkitect_option_groups = [
         GoalShopProfit
     ]),
     OptionGroup("Challenges/Checks", [
-        ChallengeCustomers,
+        ChallengeMaximumCustomers,
         ChallengeMaximumExcitement,
         ChallengeMaximumIntensity,
         ChallengeMaximumNausea,
         ChallengeMaximumSatisfaction,
+        ChallengeMaximumCoasterRevenue,
         ChallengeMaximumRideRevenue,
         ChallengeMaximumShopRevenue,
+        ChallengeMaximumRideProfit,
+        ChallengeMaximumShopProfit,
         ChallengeDecorationRating,
+        ChallengeMaximumPhotos,
+        ChallengeMaximumRideVouchers,
+        ChallengeMaximumShopVouchers,
         ChallengeParkGuests,
         ChallengeEmployees,
         ChallengePayMoney,
@@ -784,7 +979,8 @@ parkitect_option_groups = [
     ]),
     OptionGroup("Rules", [
         TrapGuestsMoneyFlux,
-        SelectedProgressiveSpeedups
+        SelectedProgressiveSpeedups,
+        ReleaseMode,
     ]),
     OptionGroup("Parkitect Mods", [
         ParkitectModsInfo,
@@ -824,7 +1020,17 @@ class ParkitectOptions(PerGameCommonOptions):
     utility_buildings: UtilityBuildings
     decorations: Decorations
     statistics: Statistics
-    
+
+    # QoL
+    early_toilets: EarlyToilets
+    early_cash_machine: EarlyCashMachine
+    early_first_aid_room: EarlyFirstAidRoom
+    early_edible_shop: EarlyEdibleShop
+    early_ride: EarlyRide
+    early_decoration: EarlyDecoration
+    early_staff_room: EarlyStaffRoom
+    early_training_room: EarlyTrainingRoom
+
     # Goals
     goal_guests: GoalGuests
     goal_money: GoalMoney
@@ -837,14 +1043,20 @@ class ParkitectOptions(PerGameCommonOptions):
     goal_shop_profit: GoalShopProfit
 
     # Challenges / Checks
-    challenge_customers: ChallengeCustomers
+    challenge_maximum_customers: ChallengeMaximumCustomers
     challenge_maximum_excitement: ChallengeMaximumExcitement
     challenge_maximum_intensity: ChallengeMaximumIntensity
     challenge_maximum_nausea: ChallengeMaximumNausea
     challenge_maximum_satisfaction: ChallengeMaximumSatisfaction
+    challenge_maximum_coaster_revenue: ChallengeMaximumCoasterRevenue
     challenge_maximum_ride_revenue: ChallengeMaximumRideRevenue
     challenge_maximum_shop_revenue: ChallengeMaximumShopRevenue
+    challenge_maximum_ride_profit: ChallengeMaximumRideProfit
+    challenge_maximum_shop_profit: ChallengeMaximumShopProfit
     challenge_enable_decoration: ChallengeDecorationRating
+    challenge_maximum_photos: ChallengeMaximumPhotos
+    challenge_maximum_ride_vouchers: ChallengeMaximumRideVouchers
+    challenge_maximum_shop_vouchers: ChallengeMaximumShopVouchers
     challenge_park_guests: ChallengeParkGuests
     challenge_employees: ChallengeEmployees
     challenge_pay_money: ChallengePayMoney
@@ -877,6 +1089,7 @@ class ParkitectOptions(PerGameCommonOptions):
     # Parkitect Mod rules.
     guests_money_flux: TrapGuestsMoneyFlux
     progressive_speedups: SelectedProgressiveSpeedups
+    release_mode: ReleaseMode
 
     # Parkitect Mods
     parkitect_mods: ParkitectModsInfo
