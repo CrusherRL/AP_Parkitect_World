@@ -12,7 +12,7 @@ from .scenarios import lakeside_gardens, dusty_ridge_ranch, the_broken_atoll, ma
 DEBUG = False
 FAIL = False
 
-AP_WORLD_VERSION = "v1.6.0"
+AP_WORLD_VERSION = "v1.6.1"
 THEME = "stone"
 BASE_ID = 3000000
 
@@ -156,17 +156,17 @@ ATTRACTION_DECO_RATING_CHANCES = {
         0: 20,  # Bad
         1: 35,  # Very Low
         2: 30,  # Low
-        3: 9,  # Medium
+        3: 10,  # Medium
         4: 5,  # High
-        5: 1,  # Amazing
+        5: 0,  # Amazing
     },
     1: {  # Medium Difficulty
         0: 10,  # Bad
         1: 20,  # Very Low
         2: 35,  # Low
-        3: 28,  # Medium
-        4: 5,  # High
-        5: 2,  # Amazing
+        3: 25,  # Medium
+        4: 7,  # High
+        5: 3,  # Amazing
     },
     2: {  # Hard Difficulty
         0: 2,  # Bad
@@ -179,10 +179,10 @@ ATTRACTION_DECO_RATING_CHANCES = {
     3: {  # Extreme Difficulty
         0: 1,  # Bad
         1: 1,  # Very Low
-        2: 1,  # Low
+        2: 3,  # Low
         3: 20,  # Medium
         4: 45,  # High
-        5: 32,  # Amazing
+        5: 30,  # Amazing
     },
 }
 
