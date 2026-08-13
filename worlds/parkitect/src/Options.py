@@ -61,53 +61,9 @@ class DLC(IntEnum):
 class SelectedScenario(Choice):
     """
     Choose which scenario you'd like to play!
-
-    Custom Campaign:
-    0 - "Archipelago - Lakeside Gardens"
-    1 - "Archipelago - Dusty Ridge Ranch,
-    2 - "Archipelago - The Broken Atoll,
-    3 - "Archipelago - Magma Falls"
-
-    Main Campaign:
-    100 - "Maple Meadows"
-    101 - "Chanute Airfield"
-    102 - "Victoria Lake"
-    103 - "Western Roundup"
-    104 - "Coral Caldera"
-    105 - "Mystic Oasis"
-    106 - "Nova Labs"
-    107 - "Archipelago Adventures"
-    108 - "Adventure Island"
-    109 - "Batavia Cay"
-    110 - "Ice-Shelf Islands"
-    111 - "HappyCo Harbor"
-    112 - "Biscayne Beach"
-    113 - "Highway Hijinks"
-    114 - "Honey Hills"
-    115 - "Orchard Acres"
-    116 - "Coaster Canyon"
-    117 - "Hickory Hill"
-    118 - "Pagoda Valley"
-    119 - "Kaiserberg"
-    120 - "Sakura Gardens"
-    121 - "Silica Slopes"
-    122 - "Disaster Peaks"
-    123 - "Robopark"
-    124 - "Sheer Cliffs"
-    125 - "Zalgonia"
-    126 - "HappyCo. Bakery"
-
-    Taste of Adventure Campaign:
-    200 - "Yucatán Ridge"
-    201 - "Brimstone Peak"
-    202 - "Candyland"
-    203 - "Timber Creek"
-    204 - "Jungle Adventure"
-    205 - "Technopolis"
-    206 - "Dragon Valley"
-    207 - "Victoria Island"
-    208 - "Celeste Mountain"
-    209 - "The Moon"
+    First 4 are from a custom Campaign.
+    "Maple Meadows" - "HappyCo. Bakery" are Main Campaign.
+    "Yucatán Ridge" - "The Moon" are Taste of Adventure (DLC) Campaign
     """
     display_name = "Scenario"
     option_lakeside_gardens = Scenario.lakeside_gardens.value
@@ -899,7 +855,6 @@ class RetroSteelCoaster(Toggle):
 parkitect_option_groups = [
     OptionGroup("Scenario Options", [
         SelectedScenario,
-        GuaranteedUnlockedStarter,
         SelectedDifficulty
     ]),
     OptionGroup("DLC Options", [
@@ -913,6 +868,7 @@ parkitect_option_groups = [
         Statistics
     ]),
     OptionGroup("QoL", [
+        GuaranteedUnlockedStarter,
         EarlyToilets,
         EarlyCashMachine,
         EarlyFirstAidRoom,
@@ -1010,7 +966,6 @@ parkitect_option_groups = [
 @dataclass
 class ParkitectOptions(PerGameCommonOptions):
     difficulty: SelectedDifficulty
-    guaranteed_unlocked_starter: GuaranteedUnlockedStarter
     scenario: SelectedScenario
     dlc1: SelectedDLC1
     dlc2: SelectedDLC2
@@ -1022,6 +977,7 @@ class ParkitectOptions(PerGameCommonOptions):
     statistics: Statistics
 
     # QoL
+    guaranteed_unlocked_starter: GuaranteedUnlockedStarter
     early_toilets: EarlyToilets
     early_cash_machine: EarlyCashMachine
     early_first_aid_room: EarlyFirstAidRoom
