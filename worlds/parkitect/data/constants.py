@@ -9,12 +9,14 @@ from .scenarios import lakeside_gardens, dusty_ridge_ranch, the_broken_atoll, ma
     pagoda_valley, kaiserberg, sakura_gardens, silica_slopes, disaster_peaks, zalgonia, happyco_bakery, sheer_cliffs, \
     coaster_canyon, robopark
 
-DEBUG = False
+DEBUG = True
 FAIL = False
 
-AP_WORLD_VERSION = "v1.6.1"
+AP_WORLD_VERSION = "v1.6.2"
 THEME = "stone"
 BASE_ID = 3000000
+
+ITEMS_PER_LOCATION = 3
 
 CHANCE_VERY_LOW = .33
 CHANCE_LOW = .4
@@ -129,6 +131,9 @@ RULE_TYPE_PARKITECT_ITEM = 'Parkitect_Item'
 RULE_TYPE_CATEGORY = 'Category'
 RULE_TYPE_DECORATION = 'Decoration'
 
+CHECK_ITEM = "item"
+CHECK_DECO = "deco"
+
 RULE_RIDE_STAT_EXEMPT_REVENUE_MIN = 0
 RULE_RIDE_STAT_EXEMPT_REVENUE_MAX = 200
 
@@ -140,13 +145,20 @@ TIER_3_PROGRESS = 0.18
 TIER_4_PROGRESS = 0.35
 TIER_5_PROGRESS = 0.60
 
+ATTRACTION_DECO_RATING_BAD = "Bad"
+ATTRACTION_DECO_RATING_VERY_LOW = "Very Low"
+ATTRACTION_DECO_RATING_LOW = "Low"
+ATTRACTION_DECO_RATING_MEDIUM = "Medium"
+ATTRACTION_DECO_RATING_HIGH = "High"
+ATTRACTION_DECO_RATING_AMAZING = "Amazing"
+
 ATTRACTION_DECO_RATING = {
-    0: "Bad",
-    1: "Very Low",
-    2: "Low",
-    3: "Medium",
-    4: "High",
-    5: "Amazing",
+    0: ATTRACTION_DECO_RATING_BAD,
+    1: ATTRACTION_DECO_RATING_VERY_LOW,
+    2: ATTRACTION_DECO_RATING_LOW,
+    3: ATTRACTION_DECO_RATING_MEDIUM,
+    4: ATTRACTION_DECO_RATING_HIGH,
+    5: ATTRACTION_DECO_RATING_AMAZING,
 }
 
 ATTRACTION_DECO_RATING_INDEX = {rating: index for index, rating in ATTRACTION_DECO_RATING.items()}

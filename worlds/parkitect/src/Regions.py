@@ -2,10 +2,10 @@ import math
 from typing import Dict
 
 from BaseClasses import MultiWorld, Region, Location
-from worlds.generic.Rules import add_rule
+from rule_builder.rules import HasGroup
 from worlds.parkitect.data.items import TYPE_RIDES, TYPE_SHOPS
 
-from ..data.constants import DEBUG
+from ..data.constants import DEBUG, ITEMS_PER_LOCATION
 from .LoggerHelper import LoggerHelper
 
 from Utils import visualize_regions
@@ -14,10 +14,11 @@ class ParkitectLocation(Location):
   game = "Parkitect"
 
 class Regions:
-  def __init__(self, player: int, multiworld: "MultiWorld", location_name_to_id: Dict[str, int]):
+  def __init__(self, player: int, multiworld: "MultiWorld", location_name_to_id: Dict[str, int], _set_rule):
     self.player = player
     self.multiworld = multiworld
     self.location_name_to_id = location_name_to_id
+    self._set_rule = _set_rule
 
   @staticmethod
   def get_location_name_from_index(location_number: int) -> str:
@@ -35,19 +36,21 @@ class Regions:
 
   @staticmethod
   def get_region_from_parkitect_location(location_number: int):
-    if location_number <= 2:
+    if location_number <= ITEMS_PER_LOCATION:
       return "Parkitect_Challenge_Level_0"
 
-    if location_number <= 5:
-      return "Parkitect_Challenge_Level_1"
+    # level = -> (items - 1) / rows
+    # level 2 -> (4 - 1) / 3
+    # 4-1 = 3; 3/3 = 1; -> floor = 1
+    # 5-1 = 4; 4/3 = 1.33; -> floor = 1
+    # 6-1 = 5; 5/3 = 1.66; -> floor = 1
 
-    # level 3 -> 5 items / 3 rows
-    # 6-5 = 1; 1/3 = 0.33; 0.33+1 = 1.33; -> ceil = 2
-    # 7-5 = 2; 2/3 = 0.66; 0.66+1 = 1.66; -> ceil = 2
-    # 8-5 = 3; 3/3 = 1; 1+1 = 2; -> ceil = 2
-    # 9-5 = 4; 4/3 = 1.33; 0.33+1 = 2.33; -> ceil = 3
-    id = math.ceil((location_number - 5) / 3) + 1
-    return f"Parkitect_Challenge_Level_{id}"
+    # level 3 -> (7 - 1) / 3
+    # 7-1 = 6; 6/3 = 2; -> floor = 2
+    # 8-1 = 7; 7/3 = 2.33; -> floor = 2
+    # 9-1 = 8; 8/3 = 2.66; -> floor = 2
+    level = math.floor((location_number - 1) / ITEMS_PER_LOCATION)
+    return f"Parkitect_Challenge_Level_{level}"
     
   def _locations_to_region(self, location, ending_location, chosen_region):
     locations = []
@@ -107,33 +110,33 @@ class Regions:
     c.connect(level_0)
 
     current_level = 1
-    item = 3
+    current_item_count = len(level_0.locations)
 
-    while (item + 3) <= item_length:
-      LoggerHelper.info(f"{current_level} - {item}")
+    while (current_item_count + ITEMS_PER_LOCATION) <= item_length:
+      LoggerHelper.info(f"{current_level} - {current_item_count}")
       level = Region(f"Parkitect_Challenge_Level_{current_level}", self.player, self.multiworld)
-      level.locations = self._locations_to_region(item, item + 2, level)
+      level.locations = self._locations_to_region(current_item_count, current_item_count + ITEMS_PER_LOCATION - 1, level)
       self.multiworld.regions.append(level)
 
       # connect them
-      if (current_level != 1):
+      if current_level != 1:
         previous_level = self.multiworld.get_region(f"Parkitect_Challenge_Level_{current_level - 1}", self.player)
       else:
         previous_level = level_0
 
       previous_level.connect(level)
 
-      item += 3
+      current_item_count += ITEMS_PER_LOCATION
       current_level += 1
 
-    LoggerHelper.info(f"ending: {current_level} - {item}")
+    LoggerHelper.info(f"ending: {current_level} - {current_item_count}")
     current_level -= 1
 
     # fill rest of items, if there are any
-    if item < item_length:
+    if current_item_count < item_length:
       LoggerHelper.info("setting extra end level")
       end_level = Region(f"Parkitect_Challenge_Level_{current_level + 1}", self.player, self.multiworld)
-      end_level.locations = self._locations_to_region(item, item_length - 1, end_level)
+      end_level.locations = self._locations_to_region(current_item_count, item_length - 1, end_level)
       self.multiworld.regions.append(end_level)
 
       previous_level = self.multiworld.get_region(f"Parkitect_Challenge_Level_{current_level}", self.player)
@@ -169,28 +172,13 @@ class Regions:
         num_rides = 4
         num_shops = 3
 
-      elif level_index == 4:
-        num_rides = 5
-        num_shops = 4
+      rule_ride = HasGroup(TYPE_RIDES, count=num_rides)
+      rule_shop = HasGroup(TYPE_SHOPS, count=num_shops)
+      rule = rule_ride | rule_shop if level_index == 1 else rule_ride & rule_shop
+      #self._set_rule(region_entrance, rule)
 
-      elif level_index == 5:
-        num_rides = 7
-        num_shops = 5
-
-      elif level_index == 6:
-        num_rides = 9
-        num_shops = 7
-
-      elif level_index == 7:
-        num_rides = 12
-        num_shops = 9
-
-      elif level_index == 8:
-        num_rides = 13
-        num_shops = 11
-      
-      add_rule(region_entrance, lambda state, count=num_rides: state.has_group(TYPE_RIDES, self.player, count))
-      add_rule(region_entrance, lambda state, count=num_shops: state.has_group(TYPE_SHOPS, self.player, count), "or" if level_index == 1 else "and")
+      #add_rule(region_entrance, lambda state, count=num_rides: state.has_group(TYPE_RIDES, self.player, count))
+      #add_rule(region_entrance, lambda state, count=num_shops: state.has_group(TYPE_SHOPS, self.player, count), "or" if level_index == 1 else "and")
 
     victory = Region("Victory", self.player, self.multiworld)
     victory.locations = [ParkitectLocation(self.player, "Victory", None, victory)]

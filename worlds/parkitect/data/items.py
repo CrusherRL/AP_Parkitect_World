@@ -531,6 +531,10 @@ SHOPS = {
     COOKIES,
     CORNDOGS,
     SUB_SANDWICHES,
+
+    # Mods
+    TACO_SHOP,
+    PANCAKE_SHOP,
   ],
   TYPE_SHOP_FACILITIES: [
     BALLOON_SHOP,
@@ -548,8 +552,6 @@ SHOPS = {
 
     # Mods
     DRAGON_SHOP,
-    TACO_SHOP,
-    PANCAKE_SHOP,
   ],
   TYPE_STAT_EXEMPT: [
     BALLOON_SHOP,

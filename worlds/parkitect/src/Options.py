@@ -196,7 +196,7 @@ class EarlyCashMachine(Choice):
     display_name = "Early Cash Machine"
     option_no = 0
     option_yes = 1
-    default = 1
+    default = 0
 
 class EarlyFirstAidRoom(Choice):
     """
@@ -205,7 +205,7 @@ class EarlyFirstAidRoom(Choice):
     display_name = "Early First Aid Room"
     option_no = 0
     option_yes = 1
-    default = 1
+    default = 0
 
 class EarlyEdibleShop(Choice):
     """
@@ -219,7 +219,6 @@ class EarlyEdibleShop(Choice):
 class EarlyRide(Choice):
     """
     First 30 items includes a random Ride.
-    display_name = "Early Ride"
     """
     display_name = "Early Ride"
     option_no = 0
@@ -233,22 +232,13 @@ class EarlyDecoration(Choice):
     display_name = "Early Decoration Theme"
     option_no = 0
     option_yes = 1
-    default = 1
+    default = 0
 
 class EarlyStaffRoom(Choice):
     """
     First 30 items includes a Staff Room.
     """
     display_name = "Early Staff Room"
-    option_no = 0
-    option_yes = 1
-    default = 1
-
-class EarlyTrainingRoom(Choice):
-    """
-    First 30 items includes the Training Room.
-    """
-    display_name = "Early Training Room"
     option_no = 0
     option_yes = 1
     default = 1
@@ -876,7 +866,6 @@ parkitect_option_groups = [
         EarlyRide,
         EarlyDecoration,
         EarlyStaffRoom,
-        EarlyTrainingRoom,
     ]),
     OptionGroup("Goal Options", [
         GoalGuests,
@@ -985,7 +974,6 @@ class ParkitectOptions(PerGameCommonOptions):
     early_ride: EarlyRide
     early_decoration: EarlyDecoration
     early_staff_room: EarlyStaffRoom
-    early_training_room: EarlyTrainingRoom
 
     # Goals
     goal_guests: GoalGuests

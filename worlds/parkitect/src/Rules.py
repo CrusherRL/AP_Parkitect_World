@@ -1,19 +1,24 @@
+from rule_builder.rules import Has, HasGroup
 from worlds.parkitect.src.Item import ItemHelper
 from .Options import Difficulty
+from .ParkitectCheck import ParkitectCheck
 from .Statistics import Statistics
 from .Regions import Regions
 
-from worlds.generic.Rules import add_rule
-
 from ..data.items import *
 from ..src.Items import get_extra_checks
-from ..data.constants import ATTRACTION_DECO_RATING_INDEX, CHALLENGE_PARK_GUESTS_RANGES, CHALLENGE_EMPLOYEE_RANGES, RULE_TYPE_PARKITECT_ITEM, RULE_TYPE_CATEGORY, RULE_RIDE_STAT_EXEMPT_REVENUE_MAX, RULE_RIDE_STAT_EXEMPT_REVENUE_MIN, RULE_SHOP_STAT_EXEMPT_REVENUE_MIN, RULE_SHOP_STAT_EXEMPT_REVENUE_MAX, TIER_2_PROGRESS, TIER_3_PROGRESS, TIER_4_PROGRESS, TIER_5_PROGRESS, CHALLENGE_PAY_MONEY_RANGES, RULE_TYPE_DECORATION, CHANCE_MEDIUM, CHANCE_VERY_HIGH, ROUND_DIGITS_NONE, ROUND_DIGITS
+from ..data.constants import ATTRACTION_DECO_RATING_INDEX, CHALLENGE_PARK_GUESTS_RANGES, CHALLENGE_EMPLOYEE_RANGES, \
+  RULE_TYPE_PARKITECT_ITEM, RULE_TYPE_CATEGORY, RULE_RIDE_STAT_EXEMPT_REVENUE_MAX, RULE_RIDE_STAT_EXEMPT_REVENUE_MIN, \
+  RULE_SHOP_STAT_EXEMPT_REVENUE_MIN, RULE_SHOP_STAT_EXEMPT_REVENUE_MAX, TIER_2_PROGRESS, TIER_3_PROGRESS, \
+  TIER_4_PROGRESS, TIER_5_PROGRESS, CHALLENGE_PAY_MONEY_RANGES, RULE_TYPE_DECORATION, CHANCE_MEDIUM, CHANCE_VERY_HIGH, \
+  ROUND_DIGITS_NONE, ROUND_DIGITS, ATTRACTION_DECO_RATING_LOW
 
 from .LoggerHelper import LoggerHelper
 
 class Rules:
-  def __init__(self, world):
+  def __init__(self, world, _set_rule):
     self.world = world
+    self._set_rule = _set_rule
     self.extra_challenges = get_extra_checks(self.world)
     self.world.random.shuffle(self.extra_challenges)
     self.guaranteed_extra_challenge = (
@@ -22,7 +27,7 @@ class Rules:
     )
 
   def _set_parkitect_rule(self, rule_type, selected_item, location_number) -> None:
-    LoggerHelper.log(location_number, "_set_parkitect_rule")
+    LoggerHelper.log(location_number, "_set_parkitect_rule:location_number")
     
     region_name = Regions.get_region_from_parkitect_location(location_number)
     location = self.world.multiworld.get_region(region_name, self.world.player).entrances[0]
@@ -30,15 +35,18 @@ class Rules:
     assert location is not None, f"Couldn't find region \"{region_name}\" for location_number {location_number}"
 
     if rule_type == RULE_TYPE_PARKITECT_ITEM:
-      add_rule(location, lambda state, item=selected_item: state.has(item, self.world.player))
+      self._set_rule(location, Has(selected_item))
+      #add_rule(location, lambda state, item=selected_item: state.has(item, self.world.player))
       return
 
     if rule_type == RULE_TYPE_CATEGORY:
-      add_rule(location, lambda state, category=selected_item: state.has_group(category, self.world.player))
+      self._set_rule(location, HasGroup(selected_item))
+      #add_rule(location, lambda state, category=selected_item: state.has_group(category, self.world.player))
       return
 
     if rule_type == RULE_TYPE_DECORATION:
-      add_rule(location, lambda state: state.has_group(TYPE_DECORATIONS, self.world.player))
+      self._set_rule(location, HasGroup(TYPE_DECORATIONS))
+      #add_rule(location, lambda state: state.has_group(TYPE_DECORATIONS, self.world.player))
       return
 
     assert rule_type in (
@@ -143,7 +151,8 @@ class Rules:
     LoggerHelper.log(self.world.starter, "starter")
 
     for number, parkitect_item in enumerate(self.world.item_table):
-      #LoggerHelper.log(prerequisites, "prerequisites")
+      LoggerHelper.info("____________________________________________________________________________")
+      LoggerHelper.log(prerequisites, "prerequisites")
       LoggerHelper.log(parkitect_item, "parkitect_item")
       parkitect_item_helper = ItemHelper(parkitect_item)
 
@@ -162,13 +171,14 @@ class Rules:
 
       progress = number / item_table_length
       item_helper = self._find_challenge(item, number)
-      check = self._create_check(number, item_helper, prerequisites, progress)
-      LoggerHelper.log(check, "check")
-      self.world.challenges.append(check)
+      parkitect_check = self._create_check(number, item_helper, prerequisites, progress)
+      LoggerHelper.log(parkitect_check.to_dict(), "parkitect_check")
+      self.world.challenges.append(parkitect_check.to_dict())
 
-      if "deco" in check["item"] and len(check["item"]["deco"]) > 0:
-        if ATTRACTION_DECO_RATING_INDEX[check["item"]["deco"]] >= ATTRACTION_DECO_RATING_INDEX["Low"]:
+      if parkitect_check.has_decoration():
+        if ATTRACTION_DECO_RATING_INDEX[parkitect_check.get_decoration_index()] >= ATTRACTION_DECO_RATING_INDEX[ATTRACTION_DECO_RATING_LOW]:
           self._set_parkitect_rule(RULE_TYPE_DECORATION, None, number)
+
       # Handle unlocked rides
       if parkitect_item_helper.is_shop() or parkitect_item_helper.is_ride():
         queued_prerequisites.append(parkitect_item_helper.item)
@@ -196,29 +206,26 @@ class Rules:
 
     return ItemHelper(item)
 
-  def _create_check(self, number: int, item_helper: ItemHelper, prerequisites: list, progress: float) -> dict[str, str|int]:
+  def _create_check(self, number: int, item_helper: ItemHelper, prerequisites: list, progress: float) -> ParkitectCheck:
     min = 1
-    check = {
-      "location_id": number,
-      "item": None
-    }
+    parkitect_check = ParkitectCheck(number)
 
     # Pay Money -> {money}
     if item_helper.is_challenge_pay_money():
       money = self.determine_pay_money_max()
-      check["item"] = Statistics(item_helper, money).to_dict()
+      parkitect_check.set_item(Statistics(item_helper, money))
 
     # Park Guests -> {guests}
     elif item_helper.is_challenge_park_guests():
       guests = self.determine_park_guests_max(progress)
-      check["item"] = Statistics(item_helper, guests).to_dict()
+      parkitect_check.set_item(Statistics(item_helper, guests))
 
     # Employees -> {employee}
     elif item_helper.is_challenge_employees():
       type = self.world.random.choice(EMPLOYEES[TYPE_ALL])
       employees = self.determine_employee_max(type, progress)
-      check["item"] = Statistics(item_helper, employees).to_dict()
-      check["item"]["name"] = type
+      parkitect_check.set_item(Statistics(item_helper, employees))
+      parkitect_check.update_item_name(type)
 
     # Here begins stuff with Attraction / Shop and its categories
 
@@ -230,10 +237,10 @@ class Rules:
       if item_helper.is_coaster() or item_helper.is_coaster_type():
         max = 1
 
-      check["item"] = Statistics(
+      parkitect_check.set_item(Statistics(
         item_helper,
         self.world.random.randint(min, max),
-      ).to_dict()
+      ))
 
     # --- Tier 2: -> 10% ---
     elif progress <= TIER_2_PROGRESS:
@@ -287,13 +294,13 @@ class Rules:
             self.world.random.uniform(RULE_SHOP_STAT_EXEMPT_REVENUE_MIN, RULE_SHOP_STAT_EXEMPT_REVENUE_MAX),
             ROUND_DIGITS)
 
-        check["item"] = Statistics(
+        parkitect_check.set_item(Statistics(
           item_helper,
           self.world.random.randint(min, max),
           revenue=shop_revenue,
           profit=shop_profit,
           customers=customers,
-        ).to_dict()
+        ))
 
       # Ride -> max: 2
       # Ride Category Type -> max: 4
@@ -354,16 +361,16 @@ class Rules:
             ride_profit = 0
             ride_revenue = 0
 
-        check["item"] = Statistics(
+        parkitect_check.set_item(Statistics(
           item_helper,
           self.world.random.randint(min, max),
           revenue=ride_revenue,
           profit=ride_profit,
           customers=customers,
           photos=ride_photos
-        ).try_add_deco_rating(item_helper, self.world).to_dict()
+        ).try_add_deco_rating(item_helper, self.world))
 
-    # --- Tier 2: -> 18% ---
+    # --- Tier 3: -> 18% ---
     elif progress <= TIER_3_PROGRESS:
       customers = 0
 
@@ -423,14 +430,14 @@ class Rules:
             self.world.random.uniform(RULE_SHOP_STAT_EXEMPT_REVENUE_MIN, RULE_SHOP_STAT_EXEMPT_REVENUE_MAX),
             ROUND_DIGITS)
 
-        check["item"] = Statistics(
+        parkitect_check.set_item(Statistics(
           item_helper,
           self.world.random.randint(min, max),
           revenue=shop_revenue,
           profit=shop_profit,
           customers=customers,
           vouchers=shop_vouchers
-        ).to_dict()
+        ))
 
       # Ride -> max: 3
       # Ride Category Type -> max: 6
@@ -499,7 +506,7 @@ class Rules:
             ride_profit = 0
             ride_revenue = 0
 
-        check["item"] = Statistics(
+        parkitect_check.set_item(Statistics(
           item_helper,
           self.world.random.randint(min, max),
           revenue=ride_revenue,
@@ -507,9 +514,9 @@ class Rules:
           customers=customers,
           vouchers=ride_vouchers,
           photos=ride_photos
-        ).try_add_deco_rating(item_helper, self.world).to_dict()
+        ).try_add_deco_rating(item_helper, self.world))
 
-    # --- Tier 3: -> 35% ---
+    # --- Tier 4: -> 35% ---
     elif progress <= TIER_4_PROGRESS:
       # Shop -> max: 4
       # Shop Category Type -> max: 12
@@ -519,12 +526,12 @@ class Rules:
         if item_helper.is_shop_type():
           max = 12
 
-        check["item"] = Statistics.random_roll(
+        parkitect_check.set_item(Statistics.random_roll(
           item_helper,
           self.world.random.randint(min, max),
           self.world,
           prerequisites
-        ).to_dict()
+        ))
 
       # Ride -> max: 3
       # Ride Category Type -> max: 7
@@ -534,14 +541,14 @@ class Rules:
         if item_helper.is_ride_type():
           max = 7
 
-        check["item"] = Statistics.random_roll(
+        parkitect_check.set_item(Statistics.random_roll(
           item_helper,
           self.world.random.randint(min, max),
           self.world,
           prerequisites
-        ).try_add_deco_rating(item_helper, self.world).to_dict()
+        ).try_add_deco_rating(item_helper, self.world))
 
-    # --- Tier 4: -> 60% ---
+    # --- Tier 5: -> 60% ---
     elif progress <= TIER_5_PROGRESS:
       # Shop -> max: 6
       # Shop Category -> max: 24
@@ -551,12 +558,12 @@ class Rules:
         if item_helper.is_shop_type():
           max = 24
 
-        check["item"] = Statistics.random_roll(
+        parkitect_check.set_item(Statistics.random_roll(
           item_helper,
           self.world.random.randint(min, max),
           self.world,
           prerequisites
-        ).to_dict()
+        ))
 
       # Ride -> max: 4
       # Coaster -> max: 3
@@ -570,14 +577,14 @@ class Rules:
         elif item_helper.is_ride_type():
           max = 10
 
-        check["item"] = Statistics.random_roll(
+        parkitect_check.set_item(Statistics.random_roll(
           item_helper,
           self.world.random.randint(min, max),
           self.world,
           prerequisites
-        ).try_add_deco_rating(item_helper, self.world).to_dict()
+        ).try_add_deco_rating(item_helper, self.world))
 
-    # --- Tier 5: +60% ---
+    # --- Tier 6: +60% ---
     else:
       # Shops -> max: 6
       # Shop Category -> max: 30
@@ -587,12 +594,12 @@ class Rules:
         if item_helper.is_shop_type():
           max = 30
 
-        check["item"] = Statistics.random_roll(
+        parkitect_check.set_item(Statistics.random_roll(
           item_helper,
           self.world.random.randint(min, max),
           self.world,
           prerequisites
-        ).to_dict()
+        ))
 
       # Ride -> max: 4
       # Coaster Ride -> max: 4
@@ -603,14 +610,14 @@ class Rules:
         if item_helper.is_ride_type():
           max = 15
 
-        check["item"] = Statistics.random_roll(
+        parkitect_check.set_item(Statistics.random_roll(
           item_helper,
           self.world.random.randint(min, max),
           self.world,
           prerequisites
-        ).try_add_deco_rating(item_helper, self.world).to_dict()
+        ).try_add_deco_rating(item_helper, self.world))
 
-    assert check["location_id"] >= 0, f"Missing location_id for item: \"{item_helper.item}\""
-    assert len(check["item"]) > 0, f"No item set for a check. Item: \"{item_helper.item}\""
+    assert parkitect_check.location_id >= 0, f"Missing location_id for item: \"{item_helper.item}\""
+    assert len(parkitect_check.item.to_dict()) > 0, f"No item set for a check. Item: \"{item_helper.item}\""
 
-    return check
+    return parkitect_check
