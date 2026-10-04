@@ -78,6 +78,7 @@ class Statistics:
 
     assert self.type != None, f"No Type found for namend item \"{self.name}\""
 
+
   def to_dict(self):
     if self.type == TYPE_COASTER_RIDES:
       return {
@@ -127,11 +128,11 @@ class Statistics:
       }
 
     if self.type == CHALLENGE_PARK_GUESTS or self.type == CHALLENGE_EMPLOYEES or self.type == CHALLENGE_PAY_MONEY:
-      type = "Guest"
+      type = STATISTICS_BUILDER_LABEL_GUEST
       if self.type == CHALLENGE_EMPLOYEES:
-        type = "Employee"
+        type = STATISTICS_BUILDER_LABEL_EMPLOYEE
       if self.type == CHALLENGE_PAY_MONEY:
-        type = "Money"
+        type = STATISTICS_BUILDER_LABEL_MONEY
 
       return {
         "name": self.name.replace(str(self.amount), "X"),
@@ -144,6 +145,7 @@ class Statistics:
         "amount": self.amount,
         "type": self.type,
       }, "Statistics -> to_dict")
+
 
   @staticmethod
   def random_roll(item_helper: ItemHelper, amount: int, world, prerequisites = [], force = False):
@@ -220,7 +222,7 @@ class Statistics:
     # if it's a shop or shop type add a revenue
     elif (
       (item_helper.is_shop() and not item_helper.is_shop_non_profit() and not item_helper.is_facility_shop())
-      or (item_helper.is_shop_category() and any (item not in SHOPS[TYPE_NON_PROFIT] for item in prerequisites))
+      or (item_helper.is_shop_category() and not item_helper.is_facility_type() and any (item not in SHOPS[TYPE_NON_PROFIT] for item in prerequisites))
     ):
       if max_shop_revenue > 0 and world.random.random() < CHANCE_VERY_HIGH:
         option_revenue = round(world.random.uniform(0, max_shop_revenue), ROUND_DIGITS)
@@ -270,20 +272,21 @@ class Statistics:
 
     # Create and return a new Statistics object
     return Statistics(
-      name = item_helper,
-      amount = amount,
-      excitement = option_excitement,
-      intensity = option_intensity,
-      nausea = option_nausea,
-      satisfaction = option_satisfaction,
-      revenue = option_revenue,
-      profit = option_profit,
-      customers = option_total_customers,
-      deco = "",
-      photos = option_photos,
-      vouchers = option_vouchers,
+      name=item_helper,
+      amount=amount,
+      excitement=option_excitement,
+      intensity=option_intensity,
+      nausea=option_nausea,
+      satisfaction=option_satisfaction,
+      revenue=option_revenue,
+      profit=option_profit,
+      customers=option_total_customers,
+      deco="",
+      photos=option_photos,
+      vouchers=option_vouchers,
     )
-  
+
+
   def try_add_deco_rating(self, item_helper: ItemHelper, world):
     enabled_deco = world.options.challenge_enable_decoration.value
 
@@ -299,7 +302,9 @@ class Statistics:
     self.deco = self.get_rating(world.options.difficulty.value, world)
     return self
 
-  def get_rating(self, difficulty: int, world):
+
+  @staticmethod
+  def get_rating(difficulty: int, world):
     chances = ATTRACTION_DECO_RATING_CHANCES[difficulty]
 
     index = world.random.choices(

@@ -210,6 +210,11 @@ CHALLENGE_EMPLOYEES = "Employees: X"
 CHALLENGE_PAY_MONEY = "Pay Money: X"
 CHALLENGE_SKIP = "Skip"
 
+# Statistics Builder
+STATISTICS_BUILDER_LABEL_GUEST = "Guest"
+STATISTICS_BUILDER_LABEL_EMPLOYEE = "Employee"
+STATISTICS_BUILDER_LABEL_MONEY = "Money"
+
 # Employee
 EMPLOYEE_MECHANIC = "Mechanic"
 EMPLOYEE_JANITOR = "Janitor"
@@ -333,7 +338,7 @@ TYPES = {
   ],
 }
 
-# We keep the basic items and item dlc and mod items afterwards :)
+# We keep the basic items and item dlc and mod items afterward :)
 RIDES = {
   TYPE_CALM_RIDES: [
     BUMPER_CARS,
@@ -531,6 +536,10 @@ SHOPS = {
     COOKIES,
     CORNDOGS,
     SUB_SANDWICHES,
+
+    # Mods
+    TACO_SHOP,
+    PANCAKE_SHOP,
   ],
   TYPE_SHOP_FACILITIES: [
     BALLOON_SHOP,
@@ -548,8 +557,6 @@ SHOPS = {
 
     # Mods
     DRAGON_SHOP,
-    TACO_SHOP,
-    PANCAKE_SHOP,
   ],
   TYPE_STAT_EXEMPT: [
     BALLOON_SHOP,
@@ -563,7 +570,7 @@ SHOPS = {
     CASH_MACHINE,
     FIRST_AID_ROOM,
     INFO_KIOSK,
-    TOILETS
+    TOILETS,
   ],
 }
 

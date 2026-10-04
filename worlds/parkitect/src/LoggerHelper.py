@@ -12,11 +12,20 @@ class LoggerHelper:
       logger.info(f"----- {subject} -----")
       logger.info("")
 
+
+  def force_log(thing, subject = ""):
+    logger.info(f"----- {subject} -----")
+    logger.info(thing)
+    logger.info(f"----- {subject} -----")
+    logger.info("")
+
+
   @staticmethod
   def info(thing):
     if DEBUG:
       logger.info(thing)
       logger.info("")
+
 
   @staticmethod
   def force_info(thing):
