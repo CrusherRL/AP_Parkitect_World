@@ -32,6 +32,7 @@ def filter_dlc_items(items: list[str], options) -> list[str]:
 
   return items
 
+
 def filter_mod_items(items: list[str], options) -> list[str]:
   """Filter Parkitect Mod items based on which mod toggles are enabled."""
   filtered_items = items[:]
@@ -83,7 +84,8 @@ def filter_mod_items(items: list[str], options) -> list[str]:
 
   return filtered_items
 
-def add_filter_items(items: list[str], options) -> list[str]:
+
+def add_filler_items(items: list[str], options) -> list[str]:
   for each in range(options.trap_player_money.value):
     items.append(PLAYER_MONEY_TRAP)
 
@@ -177,17 +179,19 @@ def add_filter_items(items: list[str], options) -> list[str]:
 
   return items
 
+
 def filter_from_options(scenario_items, options) -> list[str]:
   """Filter items based on which DLCs are active."""
 
   items = filter_dlc_items(scenario_items, options)
   return filter_mod_items(items, options)
 
-def find_starter(items: list[str], world):
+
+def find_starter(items: list[str], world, options):
   available_items = items[:]
 
   if world.options.guaranteed_unlocked_starter.value and world.options.scenario.value in Scenario_Items_Starters:
-    available_items = Scenario_Items_Starters[world.options.scenario.value]
+    available_items = filter_dlc_items(Scenario_Items_Starters[world.options.scenario.value], options)
 
   starter = world.random.choice(available_items)
   item_helper = ItemHelper(starter)
@@ -195,23 +199,28 @@ def find_starter(items: list[str], world):
   if item_helper.is_ride() or item_helper.is_shop():
     return starter
 
-  return find_starter(items, world)
+  return find_starter(items, world, options)
+
 
 def get_items(world):
   assert world.options.scenario.value in Scenario_Items, "Scenario not found"
   scenario_items = copy.deepcopy(Scenario_Items[world.options.scenario.value])
   items: list[str] = filter_from_options(scenario_items, world.options)
 
-  starter = find_starter(items, world)
+  starter = find_starter(items, world, world.options)
+  assert starter in items, f"{starter} not found in items! \n{items}"
+
   items.remove(starter)
-  items: list[str] = add_filter_items(items, world.options)
+  items: list[str] = add_filler_items(items, world.options)
 
   assert len(items) > 0, "No Items found"
   assert starter not in items, "Starter is listed as usual item. That should never be the case!"
 
   LoggerHelper.log(starter, "starter")
+  LoggerHelper.log(items, "items")
 
   return items, starter
+
 
 def get_extra_checks(world) -> list[str]:
   extra_checks: list[str] = []
