@@ -1,6 +1,7 @@
 from ..data.items import EMPLOYEE_MECHANIC, ALL_ITEMS, EMPLOYEE_JANITOR, EMPLOYEE_SECURITY, EMPLOYEE_ENTERTAINER, \
     EMPLOYEE_HANDYMAN
 from ..data.locations import LOCATIONS
+from ..data.locationsV2 import LOCATIONS_V2
 
 from .scenarios import lakeside_gardens, dusty_ridge_ranch, the_broken_atoll, magma_falls, yucatan_ridge, \
     brimstone_peak, candyland, timber_creek, jungle_adventure, technopolis, dragon_valley, victoria_island, \
@@ -9,15 +10,19 @@ from .scenarios import lakeside_gardens, dusty_ridge_ranch, the_broken_atoll, ma
     pagoda_valley, kaiserberg, sakura_gardens, silica_slopes, disaster_peaks, zalgonia, happyco_bakery, sheer_cliffs, \
     coaster_canyon, robopark
 
-DEBUG = False
-FAIL = False
+DEBUG = True
+FAIL = True
 
 AP_WORLD_VERSION = "v1.7.0"
 THEME = "stone"
 BASE_ID = 3000000
 
-START_ITEMS_PER_LOCATION = 12
-ITEMS_PER_LOCATION = 3
+START_ITEMS_PER_LOCATION_LEGACY = 12
+START_ITEMS_PER_LOCATION = 10
+ITEMS_PER_LOCATION_LEGACY = 3
+ITEMS_PER_LOCATION = 5
+
+REGION_NAME = "Parkitect Level"
 
 CHANCE_VERY_LOW = .33
 CHANCE_LOW = .4
@@ -81,6 +86,12 @@ Scenario_Items = {
 }
 
 Scenario_Items_Starters = {
+    # Custom Campaign
+    0: lakeside_gardens.park,
+    1: dusty_ridge_ranch.park,
+    2: the_broken_atoll.park,
+    3: magma_falls.park,
+
     # Main Campaign
     100: maple_meadows.starters,
     101: chanute_airfield.starters,
@@ -126,6 +137,7 @@ Scenario_Items_Starters = {
 TASTE_OF_ADVENTURE_SCENARIOS = set(range(200, 210))
 
 LOCATION_NAME_TO_ID = {name: id for id, name in enumerate(LOCATIONS, BASE_ID)}
+LOCATION_NAME_TO_ID_V2 = {name: id for id, name in enumerate(LOCATIONS_V2, BASE_ID)}
 ITEM_NAME_TO_ID = {name: id for id, name in enumerate(ALL_ITEMS, BASE_ID)}
 
 RULE_TYPE_PARKITECT_ITEM = 'Parkitect_Item'
@@ -135,11 +147,13 @@ RULE_TYPE_DECORATION = 'Decoration'
 CHECK_ITEM = "item"
 CHECK_DECO = "deco"
 
-RULE_RIDE_STAT_EXEMPT_REVENUE_MIN = 0
-RULE_RIDE_STAT_EXEMPT_REVENUE_MAX = 200
-
-RULE_SHOP_STAT_EXEMPT_REVENUE_MIN = 200
-RULE_SHOP_STAT_EXEMPT_REVENUE_MAX = 500
+RULE_STAT_EXEMPT_REVENUE_MAX = 200
+RULE_STAT_EXEMPT_PROFIT_MAX = 200
+RULE_STAT_EXEMPT_EXCITEMENT_MIN = 15
+RULE_STAT_EXEMPT_EXCITEMENT_MAX_PERCENTAGE = .33
+RULE_STAT_EXEMPT_INTENSITY_MIN = 15
+RULE_STAT_EXEMPT_INTENSITY_MAX_PERCENTAGE = .33
+RULE_STAT_EXEMPT_SATISFACTION_MAX_PERCENTAGE = .5
 
 TIER_2_PROGRESS = 0.10
 TIER_3_PROGRESS = 0.18
@@ -245,3 +259,18 @@ CHALLENGE_EMPLOYEE_RANGES = {
         3: [10, 20],  # Extreme Difficulty
     },
 }
+
+CHALLENGE_ALL = "All"
+CHALLENGE_NAME = "name"
+CHALLENGE_AMOUNT = "amount"
+CHALLENGE_EXCITEMENT = "excitement"
+CHALLENGE_INTENSITY = "intensity"
+CHALLENGE_NAUSEA = "nausea"
+CHALLENGE_SATISFACTION = "satisfaction"
+CHALLENGE_REVENUE = "revenue"
+CHALLENGE_PROFIT = "profit"
+CHALLENGE_CUSTOMERS = "customers"
+CHALLENGE_DECO = "deco"
+CHALLENGE_PHOTOS = "photos"
+CHALLENGE_VOUCHERS = "vouchers"
+CHALLENGE_TYPE = "type"

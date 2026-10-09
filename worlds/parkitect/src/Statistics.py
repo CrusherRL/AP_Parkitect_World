@@ -1,11 +1,27 @@
-from worlds.parkitect.data.constants import RULE_SHOP_STAT_EXEMPT_REVENUE_MAX, RULE_SHOP_STAT_EXEMPT_REVENUE_MIN, RULE_RIDE_STAT_EXEMPT_REVENUE_MIN, RULE_RIDE_STAT_EXEMPT_REVENUE_MAX
-from worlds.parkitect.src.Item import ItemHelper
+from ..data.constants import RULE_STAT_EXEMPT_REVENUE_MAX, RULE_STAT_EXEMPT_PROFIT_MAX, RULE_STAT_EXEMPT_EXCITEMENT_MIN, \
+    RULE_STAT_EXEMPT_INTENSITY_MIN, RULE_STAT_EXEMPT_EXCITEMENT_MAX_PERCENTAGE, \
+    RULE_STAT_EXEMPT_INTENSITY_MAX_PERCENTAGE, RULE_STAT_EXEMPT_SATISFACTION_MAX_PERCENTAGE
+from ..src.Item import ItemHelper
 from .. import LoggerHelper
 from ..data.items import *
-from ..data.constants import ATTRACTION_DECO_RATING_CHANCES, ATTRACTION_DECO_RATING, CHANCE_VERY_LOW, CHANCE_LOW, CHANCE_MEDIUM, CHANCE_HIGH, CHANCE_VERY_HIGH, CHANCE_EXTREME, ROUND_DIGITS, ROUND_DIGITS_NONE
+from ..data.constants import ATTRACTION_DECO_RATING_CHANCES, ATTRACTION_DECO_RATING, CHANCE_VERY_LOW, CHANCE_LOW, CHANCE_MEDIUM, CHANCE_HIGH, CHANCE_VERY_HIGH, CHANCE_EXTREME, ROUND_DIGITS, ROUND_DIGITS_NONE, CHALLENGE_NAME, CHALLENGE_AMOUNT, CHALLENGE_EXCITEMENT, CHALLENGE_INTENSITY, CHALLENGE_NAUSEA, CHALLENGE_SATISFACTION, CHALLENGE_REVENUE, CHALLENGE_PROFIT, CHALLENGE_CUSTOMERS, CHALLENGE_DECO, CHALLENGE_PHOTOS, CHALLENGE_VOUCHERS, CHALLENGE_TYPE
 
 # Helper Class to have a structure for randomization
 class Statistics:
+  name: str
+  amount: int
+  excitement: float
+  intensity: float = 0
+  nausea: float = 0
+  satisfaction: float = 0
+  revenue: float = 0
+  profit: float = 0
+  customers: int = 0
+  deco: str = ""
+  photos: int = 0
+  vouchers: int = 0
+  type: str|None = None
+
   def __init__(
     self,
     name: ItemHelper,
@@ -76,55 +92,55 @@ class Statistics:
       if item_helper.is_trap():
         self.type = TYPE_TRAPS
 
-    assert self.type != None, f"No Type found for namend item \"{self.name}\""
+    assert self.type != None, f"No Type found for named item \"{self.name}\""
 
 
   def to_dict(self):
     if self.type == TYPE_COASTER_RIDES:
       return {
-        "name": self.name,
-        "amount": self.amount,
-        "excitement": self.excitement,
-        "intensity": self.intensity,
-        "nausea": self.nausea,
-        "satisfaction": self.satisfaction,
-        "revenue": self.revenue,
-        "profit": self.profit,
-        "customers": self.customers,
-        "deco": self.deco,
-        "photos": self.photos,
-        "vouchers": self.vouchers,
-        "type": self.type,
+        CHALLENGE_NAME: self.name,
+        CHALLENGE_AMOUNT: self.amount,
+        CHALLENGE_EXCITEMENT: self.excitement,
+        CHALLENGE_INTENSITY: self.intensity,
+        CHALLENGE_NAUSEA: self.nausea,
+        CHALLENGE_SATISFACTION: self.satisfaction,
+        CHALLENGE_REVENUE: self.revenue,
+        CHALLENGE_PROFIT: self.profit,
+        CHALLENGE_CUSTOMERS: self.customers,
+        CHALLENGE_DECO: self.deco,
+        CHALLENGE_PHOTOS: self.photos,
+        CHALLENGE_VOUCHERS: self.vouchers,
+        CHALLENGE_TYPE: self.type,
       }
 
     if self.type == TYPE_RIDES or self.type in TYPES[TYPE_RIDES]:
       return {
-        "name": self.name,
-        "amount": self.amount,
-        "revenue": self.revenue,
-        "profit": self.profit,
-        "customers": self.customers,
-        "deco": self.deco,
-        "vouchers": self.vouchers,
-        "type": self.type,
+        CHALLENGE_NAME: self.name,
+        CHALLENGE_AMOUNT: self.amount,
+        CHALLENGE_REVENUE: self.revenue,
+        CHALLENGE_PROFIT: self.profit,
+        CHALLENGE_CUSTOMERS: self.customers,
+        CHALLENGE_DECO: self.deco,
+        CHALLENGE_VOUCHERS: self.vouchers,
+        CHALLENGE_TYPE: self.type,
       }
 
     if self.type == TYPE_SHOPS or self.type in TYPES[TYPE_SHOPS]:
       return {
-        "name": self.name,
-        "amount": self.amount,
-        "revenue": self.revenue,
-        "profit": self.profit,
-        "customers": self.customers,
-        "vouchers": self.vouchers,
-        "type": self.type,
+        CHALLENGE_NAME: self.name,
+        CHALLENGE_AMOUNT: self.amount,
+        CHALLENGE_REVENUE: self.revenue,
+        CHALLENGE_PROFIT: self.profit,
+        CHALLENGE_CUSTOMERS: self.customers,
+        CHALLENGE_VOUCHERS: self.vouchers,
+        CHALLENGE_TYPE: self.type,
       }
 
     if self.type == TYPE_TRAPS:
       return {
-        "name": self.name,
-        "amount": self.amount,
-        "type": self.type,
+        CHALLENGE_NAME: self.name,
+        CHALLENGE_AMOUNT: self.amount,
+        CHALLENGE_TYPE: self.type,
       }
 
     if self.type == CHALLENGE_PARK_GUESTS or self.type == CHALLENGE_EMPLOYEES or self.type == CHALLENGE_PAY_MONEY:
@@ -135,15 +151,15 @@ class Statistics:
         type = STATISTICS_BUILDER_LABEL_MONEY
 
       return {
-        "name": self.name.replace(str(self.amount), "X"),
-        "amount": self.amount,
-        "type": type,
+        CHALLENGE_NAME: self.name.replace(str(self.amount), "X"),
+        CHALLENGE_AMOUNT: self.amount,
+        CHALLENGE_TYPE: type,
       }
 
     LoggerHelper.log({
-        "name": self.name,
-        "amount": self.amount,
-        "type": self.type,
+        CHALLENGE_NAME: self.name,
+        CHALLENGE_AMOUNT: self.amount,
+        CHALLENGE_TYPE: self.type,
       }, "Statistics -> to_dict")
 
 
@@ -155,8 +171,8 @@ class Statistics:
     option_total_customers = 0
     option_excitement = 0
     option_intensity = 0
-    option_nausea = 0 
-    option_satisfaction = 0 
+    option_nausea = 0
+    option_satisfaction = 0
     option_revenue = 0
     option_profit = 0
     option_photos = 0
@@ -193,7 +209,7 @@ class Statistics:
         option_satisfaction = round(world.random.uniform(0, max_satisfaction), ROUND_DIGITS)
 
       if max_coaster_revenue > 0 and world.random.random() < CHANCE_HIGH:
-        option_revenue = round(world.random.uniform(0, max_coaster_revenue), ROUND_DIGITS) / amount
+        option_revenue = round(world.random.uniform(0, max_coaster_revenue) / amount, ROUND_DIGITS)
 
     if is_coaster or item_helper.is_coaster_type():
       if max_photos > 0 and world.random.random() < CHANCE_LOW:
@@ -201,12 +217,12 @@ class Statistics:
 
       # Helps less good stat Coaster to reach it easier
       if item_helper.is_ride_stat_exempt() or any(item in RIDES[TYPE_STAT_EXEMPT] for item in prerequisites):
-        if max_excitement >= 15:
-          option_excitement = round(min(15, option_excitement * 0.33), ROUND_DIGITS)
-        if max_intensity >= 15:
-          option_intensity = round(min(15, option_intensity * 0.33), ROUND_DIGITS)
+        if max_excitement >= RULE_STAT_EXEMPT_EXCITEMENT_MIN:
+          option_excitement = round(min(RULE_STAT_EXEMPT_EXCITEMENT_MIN, option_excitement * RULE_STAT_EXEMPT_EXCITEMENT_MAX_PERCENTAGE), ROUND_DIGITS)
+        if max_intensity >= RULE_STAT_EXEMPT_INTENSITY_MIN:
+          option_intensity = round(min(RULE_STAT_EXEMPT_INTENSITY_MIN, option_intensity * RULE_STAT_EXEMPT_INTENSITY_MAX_PERCENTAGE), ROUND_DIGITS)
           option_nausea = 0
-          option_satisfaction = round(option_satisfaction * .5, ROUND_DIGITS)
+          option_satisfaction = round(option_satisfaction * RULE_STAT_EXEMPT_SATISFACTION_MAX_PERCENTAGE, ROUND_DIGITS)
 
     # if it's a ride (also coasters!)
     if item_helper.is_ride() or item_helper.is_ride_category() or item_helper.is_ride_type():
@@ -233,11 +249,11 @@ class Statistics:
       if challenge_maximum_shop_vouchers > 0 and world.random.random() < CHANCE_MEDIUM:
         option_vouchers = round(world.random.uniform(0, challenge_maximum_shop_vouchers), ROUND_DIGITS_NONE)
 
-      if item_helper.is_shop_stat_exempt() and option_revenue > RULE_SHOP_STAT_EXEMPT_REVENUE_MAX:
-        option_revenue = round(world.random.uniform(RULE_SHOP_STAT_EXEMPT_REVENUE_MIN, RULE_SHOP_STAT_EXEMPT_REVENUE_MAX), ROUND_DIGITS)
+      if item_helper.is_shop_stat_exempt() and option_revenue > RULE_STAT_EXEMPT_REVENUE_MAX:
+        option_revenue = round(world.random.uniform(0, RULE_STAT_EXEMPT_REVENUE_MAX), ROUND_DIGITS)
 
-      if item_helper.is_shop_stat_exempt() and option_profit > RULE_SHOP_STAT_EXEMPT_REVENUE_MAX:
-        option_profit = round(world.random.uniform(RULE_SHOP_STAT_EXEMPT_REVENUE_MIN, RULE_SHOP_STAT_EXEMPT_REVENUE_MAX), ROUND_DIGITS)
+      if item_helper.is_shop_stat_exempt() and option_profit > RULE_STAT_EXEMPT_PROFIT_MAX:
+        option_profit = round(world.random.uniform(0, RULE_STAT_EXEMPT_PROFIT_MAX), ROUND_DIGITS)
 
     if item_helper.is_ride():
       option_revenue /= amount
@@ -267,8 +283,11 @@ class Statistics:
       if no_stats and (world.random.random() < CHANCE_EXTREME or force):
         option_total_customers = round(world.random.uniform(0, max_customers), ROUND_DIGITS_NONE)
 
-      if item_helper.is_ride_stat_exempt() and option_revenue > RULE_RIDE_STAT_EXEMPT_REVENUE_MAX:
-        option_revenue = round(world.random.uniform(RULE_RIDE_STAT_EXEMPT_REVENUE_MIN, RULE_RIDE_STAT_EXEMPT_REVENUE_MAX), ROUND_DIGITS)
+      if item_helper.is_ride_stat_exempt():
+          if option_revenue > RULE_STAT_EXEMPT_REVENUE_MAX:
+            option_revenue = round(world.random.uniform(0, RULE_STAT_EXEMPT_REVENUE_MAX), ROUND_DIGITS)
+          if option_profit > RULE_STAT_EXEMPT_PROFIT_MAX:
+            option_profit = round(world.random.uniform(0, RULE_STAT_EXEMPT_PROFIT_MAX), ROUND_DIGITS)
 
     # Create and return a new Statistics object
     return Statistics(

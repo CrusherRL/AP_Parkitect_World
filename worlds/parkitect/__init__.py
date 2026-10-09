@@ -7,13 +7,15 @@ from worlds.AutoWorld import World, WebWorld
 from .src.Options import ParkitectOptions, parkitect_option_groups
 from .src.Items import get_items
 from .src.Regions import Regions, ParkitectLocation
+from .src.RegionsV2 import RegionsV2
 from .src.LoggerHelper import LoggerHelper
 from .src.Item import ParkitectItem, ItemHelper
 from .src.Rules import Rules
+from .src.RulesV2 import RulesV2
 from .src.ParkitectGoals import ParkitectGoals
 
 from .data.items import *
-from .data.constants import AP_WORLD_VERSION, ITEM_NAME_TO_ID, LOCATION_NAME_TO_ID, THEME, FAIL, TASTE_OF_ADVENTURE_SCENARIOS, EARLY_ITEM_RANGE
+from .data.constants import AP_WORLD_VERSION, ITEM_NAME_TO_ID, LOCATION_NAME_TO_ID, THEME, FAIL, TASTE_OF_ADVENTURE_SCENARIOS, LOCATION_NAME_TO_ID_V2
 
 class ParkitectWebWorld(WebWorld):
   theme = THEME
@@ -43,6 +45,7 @@ class ParkitectWorld(World):
   options: ParkitectOptions
 
   location_name_to_id = LOCATION_NAME_TO_ID
+  location_name_to_id_v2 = LOCATION_NAME_TO_ID_V2
   item_name_to_id = ITEM_NAME_TO_ID
   item_name_groups = {
     TYPE_RIDES: RIDES[TYPE_ALL],
@@ -62,78 +65,12 @@ class ParkitectWorld(World):
     super().__init__(multiworld, player)
     self.starter = None
     self.item_table = []
-    self.challenges = [] # Parkitect Challenge Window
+    self.challenges: dict[str, str] = {} # Parkitect Challenge Window
 
 
   def validate_scenario_dlc(self) -> None:
     if self.options.scenario.value in TASTE_OF_ADVENTURE_SCENARIOS:
       assert self.options.dlc1.value, f"Parkitect scenario \"{self.options.scenario.value}\" requires DLC \"{self.options.dlc1.display_name}\" to be set to yes."
-
-
-  def get_early_count(self) -> int:
-    count = 0
-
-    if self.options.early_toilets.value:
-      count += 1
-
-    if self.options.early_cash_machine.value:
-      count += 1
-
-    if self.options.early_first_aid_room.value:
-      count += 1
-
-    if self.options.utility_buildings.value and self.options.early_staff_room.value:
-      count += 1
-
-    if self.options.early_edible_shop.value:
-      count += 1
-
-    if self.options.early_attraction.value:
-      count += 1
-
-    if self.options.decorations and self.options.early_decoration.value:
-      count += 1
-
-    return count
-
-
-  def get_early_items(self, items: list[str]) -> list[str]:
-    early_items: list[str] = []
-
-    if self.options.early_toilets.value:
-      early_items.append(TOILETS)
-
-    if self.options.early_cash_machine.value:
-      early_items.append(CASH_MACHINE)
-
-    if self.options.early_first_aid_room.value:
-      early_items.append(FIRST_AID_ROOM)
-
-    if self.options.utility_buildings.value and self.options.early_staff_room.value:
-      early_items.append(UTILITY_BUILDING_STAFF_ROOM)
-
-    if self.options.early_edible_shop.value:
-      for item in items:
-        item_helper = ItemHelper(item)
-
-        if item_helper.is_food_shop() or item_helper.is_drink_shop():
-          early_items.append(item)
-
-    if self.options.early_attraction.value:
-      for item in items:
-        item_helper = ItemHelper(item)
-
-        if item_helper.is_ride():
-          early_items.append(item)
-
-    if self.options.early_decoration.value:
-      for item in items:
-        item_helper = ItemHelper(item)
-
-        if item_helper.is_decoration_themes():
-          early_items.append(item)
-
-    return early_items
 
 
   def handle_early_items(self):
@@ -195,13 +132,13 @@ class ParkitectWorld(World):
     LoggerHelper.log(len(self.item_table), "Total Items")
 
 
-  def _set_rule(self, spot: ParkitectLocation | Entrance, rule: CollectionRule | Rule[Any]):
-    self.set_rule(spot, rule)
-
-
   def create_regions(self) -> None:
-    Regions(self.player, self.multiworld, self.location_name_to_id, self._set_rule).create((len(self.item_table)))
-    LoggerHelper.log("Created Regions and their locations + connections")
+    if self.options.randomizer_v2.value:
+      RegionsV2(self).create((len(self.item_table)))
+    else:
+      Regions(self.player, self.multiworld, self.location_name_to_id, self._set_rule).create((len(self.item_table)))
+
+    LoggerHelper.log("Created Regions and their locations")
 
 
   def create_items(self) -> None:
@@ -220,7 +157,7 @@ class ParkitectWorld(World):
 
 
   def create_item(self, item: str) -> ParkitectItem:
-    # A classification must be set, otherwise its an error
+    # A classification must be set, otherwise it's an error
     classification = ItemClassification.useful
 
     if item in RIDES[TYPE_ALL] or item in SHOPS[TYPE_ALL] or item in UTILITY_BUILDINGS[TYPE_ALL] or item == DECORATION_THEME_GENERIC:
@@ -246,7 +183,11 @@ class ParkitectWorld(World):
 
 
   def set_rules(self) -> None:
-    Rules(self, self._set_rule).set()
+    if self.options.randomizer_v2.value:
+      RulesV2(self).set()
+    else:
+      Rules(self, self._set_rule).set()
+
     LoggerHelper.log("Set Rules")
 
 
@@ -274,6 +215,7 @@ class ParkitectWorld(World):
       "release_mode",
     )
     
+    slot_data["randomizer_v2"] = self.options.randomizer_v2.value
     slot_data["seed"] = seed
     slot_data["version"] = AP_WORLD_VERSION
     slot_data["challenges"] = self.challenges

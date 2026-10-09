@@ -2,7 +2,7 @@ import math
 
 from typing import Dict
 from BaseClasses import MultiWorld, Region, Location
-from ..data.constants import DEBUG, ITEMS_PER_LOCATION, START_ITEMS_PER_LOCATION
+from ..data.constants import DEBUG, ITEMS_PER_LOCATION_LEGACY, START_ITEMS_PER_LOCATION_LEGACY
 from .LoggerHelper import LoggerHelper
 from Utils import visualize_regions
 
@@ -35,10 +35,10 @@ class Regions:
 
   @staticmethod
   def get_region_from_parkitect_location(location_number: int) -> str:
-    if location_number < START_ITEMS_PER_LOCATION:
+    if location_number < START_ITEMS_PER_LOCATION_LEGACY:
       return "Parkitect_Challenge_Level_0"
 
-    additional_levels = int(START_ITEMS_PER_LOCATION / ITEMS_PER_LOCATION) - 1 # 1 because of index
+    additional_levels = int(START_ITEMS_PER_LOCATION_LEGACY / ITEMS_PER_LOCATION_LEGACY) - 1 # 1 because of index
 
     # level = -> (items - 1) / rows
     # level 1 -> 3 / 3
@@ -51,7 +51,7 @@ class Regions:
     # 6/3 = 2; -> floor = 2
     # 7/3 = 2.33; -> floor = 2
     # 8/3 = 2.66; -> floor = 2
-    level = math.floor(location_number / ITEMS_PER_LOCATION)
+    level = math.floor(location_number / ITEMS_PER_LOCATION_LEGACY)
     return f"Parkitect_Challenge_Level_{level - additional_levels}"
 
 
@@ -127,10 +127,10 @@ class Regions:
     current_level = 1
     current_item_count = len(level_0.locations)
 
-    while (current_item_count + ITEMS_PER_LOCATION) <= item_length:
+    while (current_item_count + ITEMS_PER_LOCATION_LEGACY) <= item_length:
       LoggerHelper.info(f"{current_level} - {current_item_count}")
       level = Region(f"Parkitect_Challenge_Level_{current_level}", self.player, self.multiworld)
-      level.locations = self._locations_to_region(current_item_count, current_item_count + ITEMS_PER_LOCATION - 1, level)
+      level.locations = self._locations_to_region(current_item_count, current_item_count + ITEMS_PER_LOCATION_LEGACY - 1, level)
       self.multiworld.regions.append(level)
 
       # connect them
@@ -141,7 +141,7 @@ class Regions:
 
       previous_level.connect(level)
 
-      current_item_count += ITEMS_PER_LOCATION
+      current_item_count += ITEMS_PER_LOCATION_LEGACY
       current_level += 1
 
     LoggerHelper.info(f"ending: {current_level} - {current_item_count}")

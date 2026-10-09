@@ -190,7 +190,7 @@ def filter_from_options(scenario_items, options) -> list[str]:
 def find_starter(items: list[str], world, options):
   available_items = items[:]
 
-  if world.options.guaranteed_unlocked_starter.value and world.options.scenario.value in Scenario_Items_Starters:
+  if world.options.scenario.value in Scenario_Items_Starters:
     available_items = filter_dlc_items(Scenario_Items_Starters[world.options.scenario.value], options)
 
   starter = world.random.choice(available_items)

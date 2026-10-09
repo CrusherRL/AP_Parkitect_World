@@ -112,6 +112,15 @@ class SelectedScenario(Choice):
     option_the_moon = Scenario.the_moon.value
 
 
+class RandomizerV2(Toggle):
+    """
+    false = Every Challenge is completely randomized
+    true = Challenges are more clustered to the specific Ride/Shop
+    """
+    display_name = "Randomizer V2"
+    default = False
+
+
 class GuaranteedUnlockedStarter(Choice):
     """
     An Attraction or Shop is guaranteed as starter.
@@ -545,8 +554,8 @@ class ChallengePayMoney(Range):
     """
     display_name = "Challenge: Pay Money"
     range_start = 0
-    range_end = 30
-    default = 20
+    range_end = 25
+    default = 15
 
 
 class ChallengeSkips(Range):
@@ -556,7 +565,7 @@ class ChallengeSkips(Range):
     """
     display_name = "Skips"
     range_start = 0
-    range_end = 30
+    range_end = 20
     default = 10
 
 
@@ -569,7 +578,7 @@ class TrapPlayerMoney(Range):
     """
     display_name = "Player Money Trap"
     range_start = 0
-    range_end = 20
+    range_end = 10
     default = 5
 
 
@@ -581,7 +590,7 @@ class TrapAttractionBreakdown(Range):
     """
     display_name = "Attraction Breakdown Trap"
     range_start = 0
-    range_end = 20
+    range_end = 10
     default = 5
 
 
@@ -592,7 +601,7 @@ class TrapAttractionVoucher(Range):
     """
     display_name = "Attraction Voucher Trap"
     range_start = 0
-    range_end = 20
+    range_end = 10
     default = 5
 
 
@@ -604,7 +613,7 @@ class TrapShopsIngredient(Range):
     """
     display_name = "Shop Ingredients Trap"
     range_start = 0
-    range_end = 20
+    range_end = 10
     default = 5
 
 
@@ -615,7 +624,7 @@ class TrapShopsClean(Range):
     """
     display_name = "Shop Cleaning Trap"
     range_start = 0
-    range_end = 20
+    range_end = 10
     default = 5
 
 
@@ -626,7 +635,7 @@ class TrapShopsVoucher(Range):
     """
     display_name = "Shop Voucher Trap"
     range_start = 0
-    range_end = 20
+    range_end = 10
     default = 5
 
 
@@ -639,8 +648,8 @@ class TrapEmployeesHiring(Range):
     """
     display_name = "Employee Hiring Trap"
     range_start = 0
-    range_end = 20
-    default = 10
+    range_end = 10
+    default = 5
 
 
 class TrapEmployeesTraining(Range):
@@ -651,7 +660,7 @@ class TrapEmployeesTraining(Range):
     """
     display_name = "Employee Training Trap"
     range_start = 0
-    range_end = 20
+    range_end = 10
     default = 5
 
 
@@ -663,7 +672,7 @@ class TrapEmployeesTired(Range):
     """
     display_name = "Employee Tiredness Trap"
     range_start = 0
-    range_end = 20
+    range_end = 10
     default = 5
 
 
@@ -675,8 +684,8 @@ class TrapWeather(Range):
     """
     display_name = "Weather Trap"
     range_start = 0
-    range_end = 30
-    default = 10
+    range_end = 16
+    default = 8
 
 
 # Traps - Guests
@@ -687,7 +696,7 @@ class TrapGuestsSpawn(Range):
     """
     display_name = "Guest Spawn Trap"
     range_start = 0
-    range_end = 30
+    range_end = 20
     default = 10
 
 
@@ -698,7 +707,7 @@ class TrapGuestsKill(Range):
     """
     display_name = "Guest Kill Trap"
     range_start = 0
-    range_end = 15
+    range_end = 10
     default = 5
 
 
@@ -709,7 +718,7 @@ class TrapGuestsMoney(Range):
     """
     display_name = "Guest Money Trap"
     range_start = 0
-    range_end = 15
+    range_end = 10
     default = 5
 
 
@@ -732,7 +741,7 @@ class TrapGuestsHunger(Range):
     """
     display_name = "Guest Hunger Trap"
     range_start = 0
-    range_end = 15
+    range_end = 10
     default = 5
 
 
@@ -743,7 +752,7 @@ class TrapGuestsThirst(Range):
     """
     display_name = "Guest Thirst Trap"
     range_start = 0
-    range_end = 15
+    range_end = 10
     default = 5
 
 
@@ -754,7 +763,7 @@ class TrapGuestsBathroom(Range):
     """
     display_name = "Guest Bathroom Trap"
     range_start = 0
-    range_end = 15
+    range_end = 10
     default = 5
 
 
@@ -765,7 +774,7 @@ class TrapGuestsVomit(Range):
     """
     display_name = "Guest Vomiting Trap"
     range_start = 0
-    range_end = 15
+    range_end = 10
     default = 5
 
 
@@ -776,7 +785,7 @@ class TrapGuestsHappiness(Range):
     """
     display_name = "Guest Happiness Trap"
     range_start = 0
-    range_end = 15
+    range_end = 10
     default = 5
 
 
@@ -787,7 +796,7 @@ class TrapGuestsTiredness(Range):
     """
     display_name = "Guest Tiredness Trap"
     range_start = 0
-    range_end = 15
+    range_end = 10
     default = 5
 
 
@@ -799,8 +808,8 @@ class TrapGuestsVandal(Range):
     """
     display_name = "Guest Vandal Trap"
     range_start = 0
-    range_end = 30
-    default = 10
+    range_end = 10
+    default = 5
 
 
 # Traps - Research
@@ -810,8 +819,8 @@ class TrapResearchTrap(Range):
     """
     display_name = "Research Trap"
     range_start = 0
-    range_end = 35
-    default = 20
+    range_end = 10
+    default = 5
 
 
 # TrapLink
@@ -973,6 +982,9 @@ parkitect_option_groups = [
         SelectedScenario,
         SelectedDifficulty,
     ]),
+    OptionGroup("Randomizer Options", [
+        RandomizerV2,
+    ]),
     OptionGroup("DLC Options", [
         SelectedDLC1,
         SelectedDLC2,
@@ -1084,6 +1096,7 @@ parkitect_option_groups = [
 class ParkitectOptions(PerGameCommonOptions):
     difficulty: SelectedDifficulty
     scenario: SelectedScenario
+    randomizer_v2: RandomizerV2
     dlc1: SelectedDLC1
     dlc2: SelectedDLC2
     dlc3: SelectedDLC3
@@ -1094,7 +1107,6 @@ class ParkitectOptions(PerGameCommonOptions):
     statistics: Statistics
 
     # QoL
-    guaranteed_unlocked_starter: GuaranteedUnlockedStarter
     early_toilets: EarlyToilets
     early_cash_machine: EarlyCashMachine
     early_first_aid_room: EarlyFirstAidRoom
